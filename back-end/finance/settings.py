@@ -139,6 +139,7 @@ DJOSER = {
         'user_create': ['rest_framework.permissions.AllowAny'],  # celui sera le seul qui n'aura pas besoin de token
         'user': ['rest_framework.permissions.IsAuthenticated'],
         'user_list': ['rest_framework.permissions.IsAuthenticated'],
+        'token_verify': ['rest_framework.permissions.AllowAny'],  # permet qu'on ne mette plus de token pour verifier letoken d'acces
     }
 
 
