@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { Plus, ShoppingBag, Truck, Monitor, Heart, Home, Coffee, MoreVertical } from 'lucide-react';
 import Modal from '../components/ui/Modal';
+import toast from 'react-hot-toast';
 
 const COLORS = [
   '#3b82f6', '#ef4444', '#22c55e', '#f59e0b',
   '#a855f7', '#ec4899', '#14b8a6', '#f97316',
 ];
 
-const AddCategoryModal = ({ isOpen, onClose }) => {
+const AddCategoryModal = ({ isOpen, onClose, onCategoryAdded, categoryToEdit }) => {
   const [selectedColor, setSelectedColor] = useState(COLORS[0]);
 
   const s = {
@@ -37,15 +38,147 @@ const AddCategoryModal = ({ isOpen, onClose }) => {
   const onF = e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; };
   const onB = e => { e.target.style.borderColor = '#e2e8f0'; e.target.style.background = '#f8fafc'; };
 
+  const [status, setStatus] = React.useState({
+    name: '',
+  });
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (categoryToEdit) {
+        setStatus({ name: categoryToEdit.name || '' });
+        setSelectedColor(categoryToEdit.iconColor || COLORS[0]);
+      } else {
+        setStatus({ name: '' });
+        setSelectedColor(COLORS[0]);
+      }
+    }
+  }, [isOpen, categoryToEdit]);
+
+  const handleChange= (e)=>{
+    const {name, value} = e.target;
+    setStatus({
+      ...status,
+      [name]: value
+    })
+  }
+
+  const refreshAccessToken= async()=>{
+    const refresh= localStorage.getItem('refresh');
+    const refreshResponse= await fetch("http://127.0.0.1:8000/auth/jwt/refresh/",{
+      method: 'POST',
+      headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        refresh: refresh
+      })
+    })
+    const data= await refreshResponse.json();
+    localStorage.setItem("token", data.access)
+
+    return data.access
+  }
+
+  const handleSubmitPost= async (e) =>{
+    e.preventDefault();
+    try{
+      let access= localStorage.getItem('token');
+      const verification= await fetch("http://127.0.0.1:8000/auth/jwt/verify/",{
+        method: 'POST',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: access
+        })
+      })
+      const verificationData= await verification.json();
+      if(verificationData.status != 200){
+        access= await refreshAccessToken()
+        localStorage.setItem("token", access)
+      }
+
+      if (categoryToEdit) {
+        const EditCategoryResponse = await fetch(`http://127.0.0.1:8000/categories/${categoryToEdit.id}/`, {
+          method: 'PATCH',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: status.name,
+            color: selectedColor,
+          })
+        });
+
+        if (EditCategoryResponse.ok) {
+          const EditCategoryData = await EditCategoryResponse.json();
+          toast.success("Modification de la categorie avec succès !");
+          setStatus({ name: '' });
+          setSelectedColor(COLORS[0]);
+          if (onCategoryAdded) {
+            onCategoryAdded();
+          }
+          onClose();
+        } else {
+          toast.error("Échec de la modification de la categorie");
+        }
+      }else{
+
+        const AddCategoryResponse = await fetch("http://127.0.0.1:8000/categories/", {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: status.name,
+            color: selectedColor,
+          })
+        });
+
+        if (AddCategoryResponse.ok) {
+          const AddCategoryData = await AddCategoryResponse.json();
+          toast.success("Ajout de la categorie avec succès !");
+          setStatus({ name: '' });
+          setSelectedColor(COLORS[0]);
+          if (onCategoryAdded) {
+            onCategoryAdded();
+          }
+          onClose();
+        } else {
+          toast.error("Échec de l'ajout de la categorie");
+        }
+      }
+        
+    }catch(err){
+      if (categoryToEdit){
+        toast.error("Erreur lors de la modification de la categorie");
+        console.error("Erreur:", err);
+      }else{
+        toast.error("Erreur lors de l'ajout de la categorie");
+        console.error("Erreur:", err);
+      }
+    }
+
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Category">
-      <form onSubmit={e => { e.preventDefault(); onClose(); }}>
+    <Modal isOpen={isOpen} onClose={onClose} title={categoryToEdit ? "Modifier la catégorie" : "Ajouter une catégorie"}>
+      <form onSubmit={handleSubmitPost}>
         <div style={s.field}>
           <label style={s.label}>Category Name *</label>
           <input
             style={s.input} type="text"
             placeholder="e.g., Food, Transport, Entertainment"
             onFocus={onF} onBlur={onB}
+            name="name"
+            value={status.name}
+            onChange={handleChange}
           />
         </div>
 
@@ -71,25 +204,148 @@ const AddCategoryModal = ({ isOpen, onClose }) => {
         </div>
 
         <div style={s.btnRow}>
-          <button type="submit" style={s.submitBtn}>Add Category</button>
-          <button type="button" style={s.cancelBtn} onClick={onClose}>Cancel</button>
+          <button type="submit" style={s.submitBtn}>{categoryToEdit ? "Enregistrer" : "Ajouter"}</button>
+          <button type="button" style={s.cancelBtn} onClick={onClose}>Annuler</button>
         </div>
       </form>
     </Modal>
   );
 };
 
-const categories = [
-  { name: 'Food & Drinks',  icon: Coffee,      count: 42, total: '$1,240', budget: 75, iconBg: '#fff7ed', iconColor: '#f97316' },
-  { name: 'Transport',      icon: Truck,        count: 28, total: '$450',   budget: 45, iconBg: '#eff6ff', iconColor: '#3b82f6' },
-  { name: 'Entertainment',  icon: Monitor,      count: 12, total: '$320',   budget: 75, iconBg: '#faf5ff', iconColor: '#a855f7' },
-  { name: 'Healthcare',     icon: Heart,        count: 5,  total: '$180',   budget: 30, iconBg: '#fff1f2', iconColor: '#f43f5e' },
-  { name: 'Shopping',       icon: ShoppingBag,  count: 15, total: '$850',   budget: 55, iconBg: '#fdf4ff', iconColor: '#d946ef' },
-  { name: 'Housing',        icon: Home,         count: 4,  total: '$2,400', budget: 70, iconBg: '#f0fdf4', iconColor: '#22c55e' },
-];
+const initialCategories = [];
 
 const Categories = () => {
   const [showModal, setShowModal] = useState(false);
+  const [categories, setCategories] = useState(initialCategories);
+  const [categoryToEdit, setCategoryToEdit] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
+
+  const openAddModal = () => {
+    setCategoryToEdit(null);
+    setShowModal(true);
+  };
+
+  const openEditModal = (cat) => {
+    setCategoryToEdit(cat);
+    setShowModal(true);
+  };
+
+  const refreshAccessToken= async()=>{
+    const refresh= localStorage.getItem('refresh');
+    const refreshResponse= await fetch("http://127.0.0.1:8000/auth/jwt/refresh/",{
+      method: 'POST',
+      headers:{
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        refresh: refresh
+      })
+    })
+    const data= await refreshResponse.json();
+    localStorage.setItem("token", data.access)
+
+    return data.access
+  }
+
+  const handleGet= async () =>{
+    try{
+      let access= localStorage.getItem('token');
+      if (!access) return; 
+
+      const verification= await fetch("http://127.0.0.1:8000/auth/jwt/verify/",{
+        method: 'POST',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: access
+        })
+      })
+      const verificationData= await verification.json();
+      if(verificationData.status != 200){
+        access= await refreshAccessToken()
+        localStorage.setItem("token", access)
+      }
+
+      const AddCategoryResponse = await fetch("http://127.0.0.1:8000/categories/", {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        
+      });
+
+      if (AddCategoryResponse.ok) {
+        const AddCategoryData = await AddCategoryResponse.json();
+        
+        const newCategories = AddCategoryData.map((category) => ({
+          name: category.name,
+          icon: Coffee,
+          count: 42,
+          total: '$1,240',
+          budget: 75,
+          iconBg: '#fff7ed',
+          iconColor: category.color,
+          id: category.id,
+        }));
+        setCategories(newCategories);
+      } else {
+        console.error("Échec de la récupération des categories");
+      }
+      
+    }catch(err){
+      console.error("Erreur lors de la récupération des categories:", err);
+    }
+  };
+
+  React.useEffect(() => {
+    handleGet();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try{
+      let access= localStorage.getItem('token');
+      const verification= await fetch("http://127.0.0.1:8000/auth/jwt/verify/",{
+        method: 'POST',
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: access
+        })
+      })
+      const verificationData= await verification.json();
+      if(verificationData.status != 200){
+        access= await refreshAccessToken()
+        localStorage.setItem("token", access)
+      }
+      
+      const DeleteCategoryResponse = await fetch(`http://127.0.0.1:8000/categories/${id}/`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+      });
+
+      if (DeleteCategoryResponse.ok) {
+        toast.success("suppression de la catégorie avec succès !");
+        handleGet();
+      } else {
+        toast.error("Échec de la suppression de la catégorie");
+      }
+    
+    }catch(err){
+      toast.error("Erreur lors de la suppression de la catégorie");
+      console.error("Erreur:", err);
+    }
+  }
 
   const s = {
     page: { fontFamily: "'Inter', system-ui, sans-serif" },
@@ -103,7 +359,7 @@ const Categories = () => {
       fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0,
     },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px' },
-    card: { background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', cursor: 'pointer', transition: 'box-shadow 0.2s' },
+    card: { background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', cursor: 'pointer', transition: 'box-shadow 0.2s', position: 'relative' },
     cardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' },
     catInfo: { display: 'flex', alignItems: 'center', gap: '10px' },
     iconBox: (bg, color) => ({ width: '36px', height: '36px', borderRadius: '10px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }),
@@ -120,18 +376,21 @@ const Categories = () => {
     addCard: { border: '2px dashed #e2e8f0', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8', background: 'transparent', minHeight: '120px', transition: 'all 0.2s' },
     addIcon: { width: '32px', height: '32px', borderRadius: '50%', border: '2px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' },
     addLabel: { fontSize: '13px', fontWeight: '600', color: '#94a3b8' },
+    dropdownMenu: { position: 'absolute', top: '40px', right: '10px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', zIndex: 10, overflow: 'hidden', minWidth: '120px' },
+    dropdownItem: { padding: '10px 16px', fontSize: '13px', color: '#1e293b', background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', display: 'block' },
+    dropdownItemDelete: { color: '#ef4444' },
   };
 
   return (
-    <div style={s.page}>
-      <AddCategoryModal isOpen={showModal} onClose={() => setShowModal(false)} />
+    <div style={s.page} onClick={() => setOpenMenuId(null)}>
+      <AddCategoryModal isOpen={showModal} onClose={() => setShowModal(false)} onCategoryAdded={handleGet} categoryToEdit={categoryToEdit} />
 
       <div style={s.header}>
         <div>
           <h2 style={s.title}>Categories</h2>
           <p style={s.subtitle}>Manage your spending categories and budgets</p>
         </div>
-        <button style={s.addBtn} onClick={() => setShowModal(true)}>
+        <button style={s.addBtn} onClick={openAddModal}>
           <Plus size={16} /> Add Category
         </button>
       </div>
@@ -150,7 +409,45 @@ const Categories = () => {
                   <p style={s.catCount}>{cat.count} transactions</p>
                 </div>
               </div>
-              <button style={s.moreBtn}><MoreVertical size={16} /></button>
+              <div style={{ position: 'relative' }}>
+                <button 
+                  style={s.moreBtn} 
+                  onClick={(e) => { 
+                    e.stopPropagation(); 
+                    setOpenMenuId(openMenuId === cat.id ? null : cat.id); 
+                  }}
+                >
+                  <MoreVertical size={16} />
+                </button>
+                {openMenuId === cat.id && (
+                  <div style={s.dropdownMenu}>
+                    <button 
+                      style={s.dropdownItem}
+                      onMouseEnter={e => e.target.style.background = '#f8fafc'}
+                      onMouseLeave={e => e.target.style.background = 'transparent'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openEditModal(cat);
+                        setOpenMenuId(null);
+                      }}
+                    >
+                      Modifier
+                    </button>
+                    <button 
+                      style={{ ...s.dropdownItem, ...s.dropdownItemDelete }}
+                      onMouseEnter={e => e.target.style.background = '#fef2f2'}
+                      onMouseLeave={e => e.target.style.background = 'transparent'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(cat.id);
+                        setOpenMenuId(null);
+                      }}
+                    >
+                      Supprimer
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
             <div style={s.cardBottom}>
               <div>
@@ -166,7 +463,7 @@ const Categories = () => {
         ))}
 
         <button style={s.addCard}
-          onClick={() => setShowModal(true)}
+          onClick={openAddModal}
           onMouseEnter={e => { e.currentTarget.style.borderColor = '#2563eb'; e.currentTarget.style.color = '#2563eb'; }}
           onMouseLeave={e => { e.currentTarget.style.borderColor = '#e2e8f0'; e.currentTarget.style.color = '#94a3b8'; }}
         >
