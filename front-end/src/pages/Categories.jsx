@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
-import { Plus, ShoppingBag, Truck, Monitor, Heart, Home, Coffee, MoreVertical } from 'lucide-react';
+import { Plus, ShoppingBag, Truck, Monitor, Heart, Home, Coffee, Pencil, Trash2 } from 'lucide-react';
+
+
 import Modal from '../components/ui/Modal';
 import toast from 'react-hot-toast';
 
@@ -95,7 +97,7 @@ const AddCategoryModal = ({ isOpen, onClose, onCategoryAdded, categoryToEdit }) 
         })
       })
       const verificationData= await verification.json();
-      if(verificationData.status != 200){
+      if(!verificationData){
         access= await refreshAccessToken()
         localStorage.setItem("token", access)
       }
@@ -218,7 +220,7 @@ const Categories = () => {
   const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState(initialCategories);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
-  const [openMenuId, setOpenMenuId] = useState(null);
+
 
   const openAddModal = () => {
     setCategoryToEdit(null);
@@ -264,7 +266,7 @@ const Categories = () => {
         })
       })
       const verificationData= await verification.json();
-      if(verificationData.status != 200){
+      if(!verificationData){
         access= await refreshAccessToken()
         localStorage.setItem("token", access)
       }
@@ -320,7 +322,7 @@ const Categories = () => {
         })
       })
       const verificationData= await verification.json();
-      if(verificationData.status != 200){
+      if(!verificationData){
         access= await refreshAccessToken()
         localStorage.setItem("token", access)
       }
@@ -362,7 +364,7 @@ const Categories = () => {
     card: { background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px', padding: '20px', cursor: 'pointer', transition: 'box-shadow 0.2s', position: 'relative' },
     cardTop: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' },
     catInfo: { display: 'flex', alignItems: 'center', gap: '10px' },
-    iconBox: (bg, color) => ({ width: '36px', height: '36px', borderRadius: '10px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }),
+    iconBox: (bg) => ({ width: '24px', height: '24px', borderRadius: '5px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }),
     catName: { fontSize: '14px', fontWeight: '700', color: '#1e293b', margin: '0 0 2px 0' },
     catCount: { fontSize: '11px', color: '#94a3b8', margin: 0 },
     moreBtn: { background: 'none', border: 'none', cursor: 'pointer', color: '#cbd5e1', padding: '2px', display: 'flex', alignItems: 'center' },
@@ -376,13 +378,26 @@ const Categories = () => {
     addCard: { border: '2px dashed #e2e8f0', borderRadius: '14px', padding: '20px', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#94a3b8', background: 'transparent', minHeight: '120px', transition: 'all 0.2s' },
     addIcon: { width: '32px', height: '32px', borderRadius: '50%', border: '2px dashed #cbd5e1', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '8px' },
     addLabel: { fontSize: '13px', fontWeight: '600', color: '#94a3b8' },
-    dropdownMenu: { position: 'absolute', top: '40px', right: '10px', background: '#fff', border: '1px solid #e2e8f0', borderRadius: '8px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', zIndex: 10, overflow: 'hidden', minWidth: '120px' },
-    dropdownItem: { padding: '10px 16px', fontSize: '13px', color: '#1e293b', background: 'none', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', display: 'block' },
-    dropdownItemDelete: { color: '#ef4444' },
+    actions: { display: 'flex', gap: '8px' },
+
+    actionBtn: (color) => ({
+      padding: '6px',
+      borderRadius: '6px',
+      border: 'none',
+      background: '#f8fafc',
+      color: color,
+      cursor: 'pointer',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      transition: 'all 0.2s',
+    }),
   };
 
+
   return (
-    <div style={s.page} onClick={() => setOpenMenuId(null)}>
+    <div style={s.page}>
+
       <AddCategoryModal isOpen={showModal} onClose={() => setShowModal(false)} onCategoryAdded={handleGet} categoryToEdit={categoryToEdit} />
 
       <div style={s.header}>
@@ -403,52 +418,32 @@ const Categories = () => {
           >
             <div style={s.cardTop}>
               <div style={s.catInfo}>
-                <div style={s.iconBox(cat.iconBg, cat.iconColor)}><cat.icon size={18} /></div>
+                <div style={s.iconBox(cat.iconColor)} />
                 <div>
                   <p style={s.catName}>{cat.name}</p>
                   <p style={s.catCount}>{cat.count} transactions</p>
                 </div>
               </div>
-              <div style={{ position: 'relative' }}>
+              <div style={s.actions}>
                 <button 
-                  style={s.moreBtn} 
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    setOpenMenuId(openMenuId === cat.id ? null : cat.id); 
-                  }}
+                  style={s.actionBtn('#2563eb')} 
+                  onClick={(e) => { e.stopPropagation(); openEditModal(cat); }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#eff6ff'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}
                 >
-                  <MoreVertical size={16} />
+                  <Pencil size={14} />
                 </button>
-                {openMenuId === cat.id && (
-                  <div style={s.dropdownMenu}>
-                    <button 
-                      style={s.dropdownItem}
-                      onMouseEnter={e => e.target.style.background = '#f8fafc'}
-                      onMouseLeave={e => e.target.style.background = 'transparent'}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openEditModal(cat);
-                        setOpenMenuId(null);
-                      }}
-                    >
-                      Modifier
-                    </button>
-                    <button 
-                      style={{ ...s.dropdownItem, ...s.dropdownItemDelete }}
-                      onMouseEnter={e => e.target.style.background = '#fef2f2'}
-                      onMouseLeave={e => e.target.style.background = 'transparent'}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(cat.id);
-                        setOpenMenuId(null);
-                      }}
-                    >
-                      Supprimer
-                    </button>
-                  </div>
-                )}
+                <button 
+                  style={s.actionBtn('#ef4444')} 
+                  onClick={(e) => { e.stopPropagation(); handleDelete(cat.id); }}
+                  onMouseEnter={e => e.currentTarget.style.background = '#fef2f2'}
+                  onMouseLeave={e => e.currentTarget.style.background = '#f8fafc'}
+                >
+                  <Trash2 size={14} />
+                </button>
               </div>
             </div>
+
             <div style={s.cardBottom}>
               <div>
                 <p style={s.totalLabel}>Total Spent</p>

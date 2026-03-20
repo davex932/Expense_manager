@@ -8,4 +8,4 @@ class Expense(models.Model):
     description= models.TextField(blank= True)
     date= models.DateField()
     user= models.ForeignKey(User, on_delete= models.CASCADE)
-    Category= models.ForeignKey(Category, on_delete= models.CASCADE)
+    category= models.ForeignKey(Category, on_delete= models.CASCADE)

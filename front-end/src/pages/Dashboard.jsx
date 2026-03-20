@@ -117,8 +117,8 @@ const Dashboard = () => {
 
   const stats = [
     { label: 'Total Expenses', amount: '$0.00', sub: 'All time', icon: DollarSign, iconBg: '#eff6ff', iconColor: '#2563eb' },
-    { label: 'This Month',     amount: '$0.00', sub: 'Current month', icon: TrendingUp, iconBg: '#f0fdf4', iconColor: '#22c55e' },
-    { label: 'Transactions',   amount: '0',     sub: 'Total records', icon: Receipt, iconBg: '#faf5ff', iconColor: '#a855f7' },
+    { label: 'This Month', amount: '$0.00', sub: 'Current month', icon: TrendingUp, iconBg: '#f0fdf4', iconColor: '#22c55e' },
+    { label: 'Transactions', amount: '0', sub: 'Total records', icon: Receipt, iconBg: '#faf5ff', iconColor: '#a855f7' },
   ];
 
   return (

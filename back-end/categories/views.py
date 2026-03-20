@@ -31,10 +31,7 @@ def category_detail(request, pk):
     except Category.DoesNotExist as e:
         return Response({'error': str(e)}, status= status.HTTP_404_NOT_FOUND)
     
-    if request.method== 'GET':
-        category_serialized= CategorySerializer(category)
-        return Response(category_serialized.data, status= status.HTTP_200_OK)
-    elif request.method== 'PATCH':
+    if request.method== 'PATCH':
         category_serialized= CategorySerializer(category, data= request.data, partial= True)
         if category_serialized.is_valid():
             category_serialized.save()
