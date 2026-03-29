@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Expenses from './pages/Expenses';
 import Profile from './pages/Profile';
 import Categories from './pages/Categories';
+import Budget from './pages/Budget';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/" element={<Layout><Dashboard /></Layout>} />
         <Route path="/expenses" element={<Layout><Expenses /></Layout>} />
         <Route path="/categories" element={<Layout><Categories /></Layout>} />
+        <Route path="/budget" element={<Layout><Budget /></Layout>} />
         <Route path="/profile" element={<Layout><Profile /></Layout>} />
         
         {/* Redirect unknown routes */}

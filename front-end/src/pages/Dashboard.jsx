@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, Receipt, Plus } from 'lucide-react';
 import Modal from '../components/ui/Modal';
 
@@ -30,6 +30,29 @@ const AddExpenseModal = ({ isOpen, onClose }) => {
 
 const Dashboard = () => {
   const [showModal, setShowModal] = useState(false);
+  const [dashboardData, setDashboardData] = useState({
+    total_expenses: 0.0,
+    total_expenses_count: 0,
+    total_expenses_current_month: 0.0
+  });
+
+  const refreshAccessToken = async () => {
+    const refresh = localStorage.getItem('refresh');
+    const refreshResponse = await fetch("http://127.0.0.1:8000/auth/jwt/refresh/", {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        refresh: refresh
+      })
+    })
+    const data = await refreshResponse.json();
+    localStorage.setItem("token", data.access)
+
+    return data.access
+  }
   const s = {
     page: { fontFamily: "'Inter', system-ui, sans-serif" },
 
@@ -116,10 +139,57 @@ const Dashboard = () => {
   };
 
   const stats = [
-    { label: 'Total Expenses', amount: '$0.00', sub: 'All time', icon: DollarSign, iconBg: '#eff6ff', iconColor: '#2563eb' },
-    { label: 'This Month', amount: '$0.00', sub: 'Current month', icon: TrendingUp, iconBg: '#f0fdf4', iconColor: '#22c55e' },
-    { label: 'Transactions', amount: '0', sub: 'Total records', icon: Receipt, iconBg: '#faf5ff', iconColor: '#a855f7' },
+    { label: 'Total Expenses', amount: `${dashboardData.total_expenses.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €`, sub: 'All time', icon: DollarSign, iconBg: '#eff6ff', iconColor: '#2563eb' },
+    { label: 'This Month', amount: `${dashboardData.total_expenses_current_month.toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €`, sub: 'Current month', icon: TrendingUp, iconBg: '#f0fdf4', iconColor: '#22c55e' },
+    { label: 'Transactions', amount: String(dashboardData.total_expenses_count), sub: 'Total records', icon: Receipt, iconBg: '#faf5ff', iconColor: '#a855f7' },
   ];
+
+  const handleGet = async () => {
+    try {
+      let access = localStorage.getItem('token');
+      if (!access) return;
+
+      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          token: access
+        })
+      })
+      const verificationData = await verification.json();
+      if (!verification.ok) {
+        access = await refreshAccessToken()
+        localStorage.setItem("token", access)
+      }
+
+      const DashboardResponse = await fetch("http://127.0.0.1:8000/dashboard/", {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+
+      });
+
+      if (DashboardResponse.ok) {
+        const DashboardData = await DashboardResponse.json();
+        setDashboardData(DashboardData);
+      } else {
+        console.error("Échec de la récupération des donnees du dashboard");
+      }
+
+    } catch (err) {
+      console.error("Erreur lors de la récupération des donnees du dashboard:", err);
+    }
+  };
+
+  useEffect(() => {
+    handleGet();
+  }, []);
 
   return (
     <div style={s.page}>

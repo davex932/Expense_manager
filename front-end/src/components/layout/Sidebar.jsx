@@ -1,11 +1,12 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Wallet, LayoutDashboard, DollarSign, Folder } from 'lucide-react';
+import { Wallet, LayoutDashboard, DollarSign, Folder, Target } from 'lucide-react';
 
 const menuItems = [
   { title: 'Dashboard', path: '/', icon: LayoutDashboard },
   { title: 'Expenses', path: '/expenses', icon: DollarSign },
   { title: 'Categories', path: '/categories', icon: Folder },
+  { title: 'Budget', path: '/budget', icon: Target },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
