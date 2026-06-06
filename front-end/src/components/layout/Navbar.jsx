@@ -5,14 +5,17 @@ import { NavLink } from 'react-router-dom';
 const Navbar = ({ onMenuClick }) => {
   const s = {
     header: {
-      height: '60px',
-      background: '#ffffff',
-      borderBottom: '1px solid #e2e8f0',
+      minHeight: '60px',
+      background: 'rgba(255, 255, 255, 0.78)',
+      backdropFilter: 'blur(18px)',
+      borderBottom: '1px solid rgba(226, 232, 240, 0.78)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      padding: '0 32px',
+      padding: '0 34px',
       flexShrink: 0,
+      boxShadow: '0 10px 30px rgba(15, 23, 42, 0.035)',
+      gap: '16px',
     },
     menuBtn: {
       display: 'none',
@@ -26,6 +29,8 @@ const Navbar = ({ onMenuClick }) => {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
+      flexWrap: 'wrap',
+      justifyContent: 'flex-end',
     },
     welcome: {
       fontSize: '13px',
@@ -33,19 +38,19 @@ const Navbar = ({ onMenuClick }) => {
     },
     welcomeSpan: {
       fontWeight: '600',
-      color: '#1e293b',
+      color: '#0f172a',
     },
     btn: {
       display: 'flex',
       alignItems: 'center',
       gap: '6px',
-      padding: '7px 14px',
-      borderRadius: '8px',
-      border: '1.5px solid #e2e8f0',
-      background: '#ffffff',
+      padding: '8px 14px',
+      borderRadius: '999px',
+      border: '1px solid #e2e8f0',
+      background: 'rgba(255, 255, 255, 0.82)',
       fontSize: '13px',
-      fontWeight: '500',
-      color: '#1e293b',
+      fontWeight: '800',
+      color: '#0f172a',
       cursor: 'pointer',
       textDecoration: 'none',
       transition: 'all 0.15s',
@@ -55,7 +60,7 @@ const Navbar = ({ onMenuClick }) => {
   return (
     <header style={s.header}>
       <div style={{ display: 'flex', alignItems: 'center' }}>
-        <button style={s.menuBtn} onClick={onMenuClick}>
+        <button className="navbar-menu-button" style={s.menuBtn} onClick={onMenuClick}>
           <Menu size={22} />
         </button>
       </div>

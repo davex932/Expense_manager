@@ -5,7 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const styles = {
   page: {
     minHeight: '100vh',
-    background: '#eef0f8',
+    background: 'linear-gradient(135deg, #eff6ff 0%, #f8fafc 48%, #f5f3ff 100%)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -16,9 +16,9 @@ const styles = {
     width: '100%',
     maxWidth: '440px',
     background: '#ffffff',
-    borderRadius: '20px',
+    borderRadius: '26px',
     padding: '44px 44px 40px',
-    boxShadow: '0 8px 40px rgba(80, 100, 200, 0.10)',
+    boxShadow: '0 28px 80px rgba(37, 99, 235, 0.16), 0 8px 30px rgba(15, 23, 42, 0.06)',
   },
   header: {
     display: 'flex',
@@ -39,8 +39,8 @@ const styles = {
   },
   title: {
     fontSize: '24px',
-    fontWeight: '700',
-    color: '#1e293b',
+    fontWeight: '800',
+    color: '#0f172a',
     margin: '0 0 6px 0',
     fontFamily: "'Outfit', 'Inter', sans-serif",
   },
@@ -79,7 +79,7 @@ const styles = {
     border: '1.5px solid #f1f3f9',
     borderRadius: '10px',
     fontSize: '13px',
-    color: '#1e293b',
+    color: '#0f172a',
     outline: 'none',
     boxSizing: 'border-box',
     transition: 'all 0.2s',
@@ -100,12 +100,12 @@ const styles = {
   submitBtn: {
     width: '100%',
     padding: '13px',
-    background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+    background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
     color: '#ffffff',
     border: 'none',
-    borderRadius: '12px',
+    borderRadius: '14px',
     fontSize: '14px',
-    fontWeight: '700',
+    fontWeight: '800',
     cursor: 'pointer',
     marginTop: '8px',
     letterSpacing: '0.02em',
@@ -117,7 +117,7 @@ const styles = {
     color: '#64748b',
   },
   footerLink: {
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#2563eb',
     textDecoration: 'none',
   },
@@ -135,29 +135,33 @@ const onBlur = (e) => {
   e.target.style.boxShadow = 'none';
 };
 
-const Field = ({ label, name, icon: Icon, type = 'text', placeholder, showToggle, show, onToggle, onChange, value }) => (
-  <div style={styles.fieldWrapper}>
-    <label style={styles.fieldLabel}>{label}</label>
-    <div style={styles.inputWrap}>
-      <div style={styles.inputIcon}><Icon size={16} /></div>
-      <input
-        name={name}
-        type={showToggle ? (show ? 'text' : 'password') : type}
-        placeholder={placeholder}
-        style={{ ...styles.input, paddingRight: showToggle ? '40px' : '14px' }}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        onChange={onChange}
-        value={value}
-      />
-      {showToggle && (
-        <button type="button" style={styles.eyeBtn} onClick={onToggle}>
-          {show ? <EyeOff size={16} /> : <Eye size={16} />}
-        </button>
-      )}
+const Field = ({ label, name, icon, type = 'text', placeholder, showToggle, show, onToggle, onChange, value }) => {
+  const Icon = icon;
+
+  return (
+    <div style={styles.fieldWrapper}>
+      <label style={styles.fieldLabel}>{label}</label>
+      <div style={styles.inputWrap}>
+        <div style={styles.inputIcon}><Icon size={16} /></div>
+        <input
+          name={name}
+          type={showToggle ? (show ? 'text' : 'password') : type}
+          placeholder={placeholder}
+          style={{ ...styles.input, paddingRight: showToggle ? '40px' : '14px' }}
+          onFocus={onFocus}
+          onBlur={onBlur}
+          onChange={onChange}
+          value={value}
+        />
+        {showToggle && (
+          <button type="button" style={styles.eyeBtn} onClick={onToggle}>
+            {show ? <EyeOff size={16} /> : <Eye size={16} />}
+          </button>
+        )}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -273,5 +277,4 @@ const Signup = () => {
 };
 
 export default Signup;
-
 

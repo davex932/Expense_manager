@@ -29,7 +29,7 @@ const CustomSelect = ({ value, onChange, options, variant = 'blue', icon: Icon, 
       width: '100%', padding: '10px 14px', 
       background: variant === 'blue' ? '#eff6ff' : '#ffffff', 
       border: `1.5px solid ${isOpen ? (variant === 'blue' ? '#2563eb' : '#cbd5e1') : (variant === 'blue' ? '#bfdbfe' : '#e2e8f0')}`, 
-      borderRadius: '12px', fontSize: '14px', color: '#1e293b', 
+      borderRadius: '14px', fontSize: '14px', color: '#0f172a', 
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       cursor: 'pointer', boxSizing: 'border-box', transition: 'all 0.2s',
       minWidth: variant === 'header' ? '160px' : 'auto'
@@ -37,7 +37,7 @@ const CustomSelect = ({ value, onChange, options, variant = 'blue', icon: Icon, 
     menu: {
       position: 'absolute', top: 'calc(100% + 8px)', right: 0, left: variant === 'header' ? 'auto' : 0,
       minWidth: '200px', width: variant === 'header' ? 'auto' : '100%',
-      background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0',
+      background: '#ffffff', borderRadius: '18px', border: '1px solid #e2e8f0',
       boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
       zIndex: 1100, overflow: 'hidden', padding: '6px',
       maxHeight: '280px', overflowY: 'auto'
@@ -50,7 +50,7 @@ const CustomSelect = ({ value, onChange, options, variant = 'blue', icon: Icon, 
     colorCircle: (color) => ({
       width: '10px', height: '10px', borderRadius: '50%', background: color || '#3b82f6'
     }),
-    label: { fontSize: '13px', fontWeight: '600', color: '#1e293b' }
+    label: { fontSize: '13px', fontWeight: '600', color: '#0f172a' }
   };
 
   return (
@@ -110,12 +110,12 @@ const DefineBudgetModal = ({ isOpen, onClose, selectedMonth, selectedYear, categ
       padding: '20px', fontFamily: "'Inter', system-ui, sans-serif",
     },
     modal: {
-      background: '#ffffff', borderRadius: '20px', width: '100%', maxWidth: '440px',
+      background: '#ffffff', borderRadius: '26px', width: '100%', maxWidth: '440px',
       boxShadow: '0 20px 60px rgba(0,0,0,0.18)', overflow: 'hidden', padding: '24px',
     },
     header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' },
     titleBox: { display: 'flex', alignItems: 'center', gap: '14px' },
-    iconBox: { width: '42px', height: '42px', borderRadius: '12px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' },
+    iconBox: { width: '42px', height: '42px', borderRadius: '14px', background: '#eff6ff', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#2563eb' },
     title: { fontSize: '18px', fontWeight: '800', color: '#111827', margin: 0 },
     subtitle: { fontSize: '13px', color: '#9ca3af', fontWeight: '500', marginTop: '1px' },
     closeBtn: { background: '#f9fafb', border: 'none', borderRadius: '10px', color: '#9ca3af', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '32px' },
@@ -123,11 +123,11 @@ const DefineBudgetModal = ({ isOpen, onClose, selectedMonth, selectedYear, categ
     grid2: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' },
     field: { display: 'flex', flexDirection: 'column', marginBottom: '20px' },
     label: { fontSize: '13px', fontWeight: '600', color: '#6b7280', marginBottom: '8px' },
-    input: { width: '100%', padding: '12px 14px', background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '12px', fontSize: '14px', color: '#111827', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' },
+    input: { width: '100%', padding: '12px 14px', background: '#f9fafb', border: '1.5px solid #e5e7eb', borderRadius: '14px', fontSize: '14px', color: '#111827', outline: 'none', transition: 'border-color 0.2s', boxSizing: 'border-box' },
     
     btnRow: { display: 'flex', gap: '12px', marginTop: '12px' },
-    cancelBtn: { flex: 1, padding: '12px', background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: '12px', fontSize: '14px', fontWeight: '600', color: '#4b5563', cursor: 'pointer' },
-    saveBtn: { flex: 1, padding: '12px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '12px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
+    cancelBtn: { flex: 1, padding: '12px', background: '#fff', border: '1.5px solid #e5e7eb', borderRadius: '14px', fontSize: '14px', fontWeight: '600', color: '#4b5563', cursor: 'pointer' },
+    saveBtn: { flex: 1, padding: '12px', background: '#2563eb', color: '#fff', border: 'none', borderRadius: '14px', fontSize: '14px', fontWeight: '600', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' },
   };
 
   const monthLabel = [
@@ -222,43 +222,43 @@ const Budget = () => {
   const s = {
     page: { fontFamily: "'Inter', system-ui, sans-serif", paddingBottom: '40px' },
     header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '28px', gap: '16px' },
-    title: { fontSize: '26px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
+    title: { fontSize: '26px', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
     subtitle: { fontSize: '13px', color: '#64748b', margin: 0 },
     
     actions: { display: 'flex', alignItems: 'center', gap: '12px' },
     addBtn: {
       display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 18px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '600', cursor: 'pointer'
     },
 
-    alert: { display: 'flex', gap: '12px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '12px', padding: '14px 18px', marginBottom: '24px' },
-    alertTitle: { fontSize: '14px', fontWeight: '700', color: '#b91c1c', margin: '0 0 2px 0' },
+    alert: { display: 'flex', gap: '12px', background: '#fef2f2', border: '1px solid #fee2e2', borderRadius: '14px', padding: '14px 18px', marginBottom: '24px' },
+    alertTitle: { fontSize: '14px', fontWeight: '800', color: '#b91c1c', margin: '0 0 2px 0' },
     alertText: { fontSize: '12px', color: '#ef4444', margin: 0 },
 
-    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginBottom: '32px' },
-    statCard: { background: '#ffffff', borderRadius: '14px', border: '1px solid #e2e8f0', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+    statsGrid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' },
+    statCard: { background: '#ffffff', borderRadius: '18px', border: '1px solid #e2e8f0', padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
     statLabel: { fontSize: '13px', color: '#64748b', margin: '0 0 8px 0' },
-    statAmount: { fontSize: '28px', fontWeight: '700', color: '#1e293b', margin: '0' },
+    statAmount: { fontSize: '28px', fontWeight: '800', color: '#0f172a', margin: '0' },
     statSub: { fontSize: '12px', color: '#94a3b8', marginTop: '6px' },
-    iconBox: (bg, color) => ({ width: '44px', height: '44px', borderRadius: '12px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }),
+    iconBox: (bg, color) => ({ width: '44px', height: '44px', borderRadius: '14px', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }),
     
     progressBg: { width: '100%', height: '6px', background: '#f1f5f9', borderRadius: '10px', marginTop: '12px', overflow: 'hidden' },
     progressFill: (w, c) => ({ width: `${w}%`, height: '100%', background: c, borderRadius: '100px', transition: 'width 0.4s ease' }),
 
-    sectionTitle: { fontSize: '16px', fontWeight: '700', color: '#1e293b', marginBottom: '18px' },
+    sectionTitle: { fontSize: '16px', fontWeight: '800', color: '#0f172a', marginBottom: '18px' },
     
-    grid: { display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px' },
+    grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' },
     catCard: { background: '#ffffff', borderRadius: '16px', border: '1px solid #e2e8f0', padding: '20px', transition: 'box-shadow 0.2s' },
     catHeader: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px', width: '100%' },
     catInfo: { display: 'flex', alignItems: 'center', gap: '12px' },
-    catIcon: (c) => ({ width: '40px', height: '40px', borderRadius: '12px', background: c, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }),
-    catName: { fontSize: '14px', fontWeight: '700', color: '#1e293b' },
+    catIcon: (c) => ({ width: '40px', height: '40px', borderRadius: '14px', background: c, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }),
+    catName: { fontSize: '14px', fontWeight: '800', color: '#0f172a' },
     catEdit: { width: '30px', height: '30px', borderRadius: '8px', background: '#f8fafc', border: 'none', color: '#94a3b8', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' },
     catAmounts: { display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '14px' },
-    spentVal: { fontSize: '22px', fontWeight: '700', color: '#1e293b' },
+    spentVal: { fontSize: '22px', fontWeight: '800', color: '#0f172a' },
     budgetVal: { fontSize: '13px', color: '#94a3b8', fontWeight: '500' },
-    catProgressLabel: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '700', marginBottom: '6px' },
+    catProgressLabel: { display: 'flex', justifyContent: 'space-between', fontSize: '11px', fontWeight: '800', marginBottom: '6px' },
     footerText: (isOver) => ({ fontSize: '11px', fontWeight: '500', color: isOver ? '#ef4444' : '#64748b', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid #f8fafc', display: 'flex', alignItems: 'center', gap: '4px' }),
 
     addCard: { 
@@ -290,7 +290,9 @@ const Budget = () => {
           }
         }
       }
-    } catch (e) {}
+    } catch {
+      token = localStorage.getItem('token');
+    }
     
     return fetch(url, {
       ...options,
@@ -319,7 +321,7 @@ const Budget = () => {
         const data = await catRes.json();
         setCategories(data);
       }
-    } catch (err) {
+    } catch {
       toast.error("Erreur lors du chargement des données");
     } finally {
       setLoading(false);
@@ -355,7 +357,7 @@ const Budget = () => {
         const error = await response.json();
         toast.error(error.detail || "Erreur lors de la création du budget");
       }
-    } catch (err) {
+    } catch {
       toast.error("Une erreur est survenue");
     }
   };

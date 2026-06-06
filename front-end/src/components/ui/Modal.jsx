@@ -26,7 +26,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       borderBottom: '1px solid #f1f5f9',
     },
     title: {
-      fontSize: '17px', fontWeight: '700', color: '#1e293b', margin: 0,
+      fontSize: '17px', fontWeight: '800', color: '#0f172a', margin: 0,
       fontFamily: "'Outfit', sans-serif",
     },
     closeBtn: {

@@ -70,7 +70,7 @@ const CustomSelect = ({ options, value, onChange, placeholder, style, variant = 
               key={opt.value}
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
               style={{
-                padding: '10px 12px', fontSize: '13px', color: '#1e293b', cursor: 'pointer',
+                padding: '10px 12px', fontSize: '13px', color: '#0f172a', cursor: 'pointer',
                 borderRadius: '6px', background: value === opt.value ? '#eff6ff' : 'transparent',
                 fontWeight: value === opt.value ? '600' : '500',
                 transition: 'background 0.2s',
@@ -102,17 +102,17 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
 
   const s = {
     field: { marginBottom: '16px' },
-    label: { display: 'block', fontSize: '13px', fontWeight: '600', color: '#1e293b', marginBottom: '6px' },
+    label: { display: 'block', fontSize: '13px', fontWeight: '600', color: '#0f172a', marginBottom: '6px' },
     input: {
       width: '100%', padding: '10px 14px',
       background: '#f8fafc', border: '1.5px solid #e2e8f0',
-      borderRadius: '8px', fontSize: '13px', color: '#1e293b',
+      borderRadius: '8px', fontSize: '13px', color: '#0f172a',
       outline: 'none', boxSizing: 'border-box',
     },
     textarea: {
       width: '100%', padding: '10px 14px',
       background: '#f8fafc', border: '1.5px solid #e2e8f0',
-      borderRadius: '8px', fontSize: '13px', color: '#1e293b',
+      borderRadius: '8px', fontSize: '13px', color: '#0f172a',
       outline: 'none', boxSizing: 'border-box',
       resize: 'vertical', minHeight: '80px',
       fontFamily: "'Inter', system-ui, sans-serif",
@@ -120,9 +120,9 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
     btnRow: { display: 'flex', gap: '10px', marginTop: '20px' },
     submitBtn: {
       flex: 1, padding: '11px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px',
-      fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+      fontSize: '14px', fontWeight: '800', cursor: 'pointer',
     },
     cancelBtn: {
       padding: '11px 20px', background: '#fff',
@@ -142,21 +142,24 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
   });
 
   useEffect(() => {
-    if (expenseToEdit) {
-      setStatus({
-        amount: expenseToEdit.amount || '',
-        category: expenseToEdit.category || '',
-        date: expenseToEdit.date || today,
-        description: expenseToEdit.description || '',
-      });
-    } else {
-      setStatus({
-        amount: '',
-        category: '',
-        date: today,
-        description: '',
-      });
-    }
+    const timer = setTimeout(() => {
+      if (expenseToEdit) {
+        setStatus({
+          amount: expenseToEdit.amount || '',
+          category: expenseToEdit.category || '',
+          date: expenseToEdit.date || today,
+          description: expenseToEdit.description || '',
+        });
+      } else {
+        setStatus({
+          amount: '',
+          category: '',
+          date: today,
+          description: '',
+        });
+      }
+    }, 0);
+    return () => clearTimeout(timer);
   }, [expenseToEdit, isOpen]);
 
 
@@ -290,12 +293,6 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
     </Modal>
   );
 };
-
-const mockExpenses = [
-  { id: 1, description: 'Courses alimentaires', amount: '45.50', date: '2026-03-18', category_name: 'Alimentation', category_color: '#3b82f6' },
-  { id: 2, description: 'Loyer Mars', amount: '1200.00', date: '2026-03-01', category_name: 'Logement', category_color: '#ef4444' },
-  { id: 3, description: 'Abonnement Netflix', amount: '15.99', date: '2026-03-15', category_name: 'Divertissement', category_color: '#22c55e' },
-];
 
 const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
@@ -487,22 +484,22 @@ const Expenses = () => {
 
   const s = {
     page: { fontFamily: "'Inter', system-ui, sans-serif" },
-    header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px' },
-    title: { fontSize: '26px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
+    header: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: '24px', gap: '16px', flexWrap: 'wrap' },
+    title: { fontSize: '26px', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
     subtitle: { fontSize: '13px', color: '#64748b', margin: 0 },
     addBtn: {
       display: 'flex', alignItems: 'center', gap: '6px',
       padding: '10px 18px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px',
       fontSize: '14px', fontWeight: '600', cursor: 'pointer', flexShrink: 0,
     },
     filterBar: {
       background: '#f8fafc', border: '1px solid #e2e8f0',
-      borderRadius: '12px', padding: '16px',
-      display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px',
+      borderRadius: '14px', padding: '16px',
+      display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap',
     },
-    searchWrap: { flex: 1, position: 'relative' },
+    searchWrap: { flex: '1 1 240px', position: 'relative' },
     searchIcon: {
       position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)',
       color: '#94a3b8', display: 'flex', alignItems: 'center', pointerEvents: 'none',
@@ -510,7 +507,7 @@ const Expenses = () => {
     searchInput: {
       width: '100%', padding: '10px 14px 10px 38px',
       background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '8px',
-      fontSize: '13px', color: '#1e293b', outline: 'none', boxSizing: 'border-box',
+      fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box',
     },
     select: {
       padding: '10px 14px', background: '#ffffff', border: '1px solid #e2e8f0',
@@ -518,21 +515,21 @@ const Expenses = () => {
       cursor: 'pointer', minWidth: '180px',
     },
     emptyCard: {
-      background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '14px',
+      background: 'rgba(255, 255, 255, 0.88)', border: '1px solid rgba(226, 232, 240, 0.88)', borderRadius: '18px', boxShadow: '0 18px 45px rgba(15, 23, 42, 0.06)',
       padding: '80px 24px', display: 'flex', flexDirection: 'column',
       alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: '10px',
     },
-    emptyTitle: { fontSize: '16px', fontWeight: '600', color: '#1e293b', margin: 0 },
+    emptyTitle: { fontSize: '16px', fontWeight: '600', color: '#0f172a', margin: 0 },
     emptyText: { fontSize: '13px', color: '#94a3b8', margin: 0 },
     emptyBtn: {
       display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 24px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px',
       fontSize: '14px', fontWeight: '600', cursor: 'pointer', marginTop: '8px',
     },
     expenseList: { display: 'flex', flexDirection: 'column', gap: '12px' },
     expenseItem: {
-      background: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '12px',
+      background: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(226, 232, 240, 0.9)', borderRadius: '16px', boxShadow: '0 14px 32px rgba(15, 23, 42, 0.05)',
       padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       transition: 'transform 0.2s, box-shadow 0.2s', cursor: 'pointer',
     },
@@ -543,10 +540,10 @@ const Expenses = () => {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }),
     itemInfo: { display: 'flex', flexDirection: 'column', gap: '2px' },
-    itemTitle: { fontSize: '15px', fontWeight: '600', color: '#1e293b', margin: 0 },
+    itemTitle: { fontSize: '15px', fontWeight: '600', color: '#0f172a', margin: 0 },
     itemSubtitle: { fontSize: '12px', color: '#64748b', margin: 0 },
     itemRight: { textAlign: 'right' },
-    itemAmount: { fontSize: '16px', fontWeight: '700', color: '#1e293b', margin: 0 },
+    itemAmount: { fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: 0 },
     itemDate: { fontSize: '11px', color: '#94a3b8', margin: 0, textTransform: 'uppercase' },
     actions: { display: 'flex', gap: '8px', marginLeft: '16px' },
     actionBtn: (color) => ({
