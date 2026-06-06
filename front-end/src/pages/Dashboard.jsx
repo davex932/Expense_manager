@@ -6,11 +6,11 @@ const AddExpenseModal = ({ isOpen, onClose }) => {
   const today = new Date().toLocaleDateString('fr-FR');
   const fs = {
     field: { marginBottom: '16px' },
-    label: { display: 'block', fontSize: '13px', fontWeight: '600', color: '#1e293b', marginBottom: '6px' },
-    input: { width: '100%', padding: '10px 14px', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#1e293b', outline: 'none', boxSizing: 'border-box' },
-    textarea: { width: '100%', padding: '10px 14px', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#1e293b', outline: 'none', boxSizing: 'border-box', resize: 'vertical', minHeight: '80px', fontFamily: "'Inter', sans-serif" },
+    label: { display: 'block', fontSize: '13px', fontWeight: '600', color: '#0f172a', marginBottom: '6px' },
+    input: { width: '100%', padding: '10px 14px', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box' },
+    textarea: { width: '100%', padding: '10px 14px', background: '#f8fafc', border: '1.5px solid #e2e8f0', borderRadius: '8px', fontSize: '13px', color: '#0f172a', outline: 'none', boxSizing: 'border-box', resize: 'vertical', minHeight: '80px', fontFamily: "'Inter', sans-serif" },
     btnRow: { display: 'flex', gap: '10px', marginTop: '20px' },
-    submitBtn: { flex: 1, padding: '11px', background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '700', cursor: 'pointer' },
+    submitBtn: { flex: 1, padding: '11px', background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '14px', fontWeight: '800', cursor: 'pointer' },
     cancelBtn: { padding: '11px 20px', background: '#fff', border: '1.5px solid #e2e8f0', borderRadius: '10px', fontSize: '14px', fontWeight: '600', color: '#64748b', cursor: 'pointer' },
   };
   const onF = e => { e.target.style.borderColor = '#2563eb'; e.target.style.background = '#fff'; };
@@ -63,7 +63,7 @@ const Dashboard = () => {
       marginBottom: '28px',
     },
     title: {
-      fontSize: '26px', fontWeight: '700', color: '#1e293b',
+      fontSize: '26px', fontWeight: '800', color: '#0f172a',
       margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif",
     },
     subtitle: { fontSize: '13px', color: '#64748b', margin: 0 },
@@ -71,7 +71,7 @@ const Dashboard = () => {
     addBtn: {
       display: 'flex', alignItems: 'center', gap: '6px',
       padding: '10px 18px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px',
       fontSize: '14px', fontWeight: '600', cursor: 'pointer',
       flexShrink: 0,
@@ -79,13 +79,13 @@ const Dashboard = () => {
 
     statsGrid: {
       display: 'grid',
-      gridTemplateColumns: 'repeat(3, 1fr)',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
       gap: '20px',
       marginBottom: '24px',
     },
     statCard: {
       background: '#ffffff',
-      borderRadius: '14px',
+      borderRadius: '18px',
       border: '1px solid #e2e8f0',
       padding: '24px',
       display: 'flex',
@@ -93,22 +93,22 @@ const Dashboard = () => {
       alignItems: 'center',
     },
     statLabel: { fontSize: '13px', color: '#64748b', margin: '0 0 8px 0' },
-    statAmount: { fontSize: '28px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0' },
+    statAmount: { fontSize: '28px', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0' },
     statSub: { fontSize: '12px', color: '#94a3b8', margin: 0 },
     iconBox: (bg, color) => ({
-      width: '44px', height: '44px', borderRadius: '12px',
+      width: '44px', height: '44px', borderRadius: '14px',
       background: bg, display: 'flex', alignItems: 'center',
       justifyContent: 'center', color, flexShrink: 0,
     }),
 
     contentGrid: {
       display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
       gap: '20px',
     },
     card: {
       background: '#ffffff',
-      borderRadius: '14px',
+      borderRadius: '18px',
       border: '1px solid #e2e8f0',
       overflow: 'hidden',
     },
@@ -119,7 +119,7 @@ const Dashboard = () => {
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-    cardTitle: { fontSize: '15px', fontWeight: '700', color: '#1e293b', margin: 0 },
+    cardTitle: { fontSize: '15px', fontWeight: '800', color: '#0f172a', margin: 0 },
     viewAllBtn: {
       fontSize: '13px', fontWeight: '600', color: '#2563eb',
       background: 'none', border: 'none', cursor: 'pointer', padding: 0,
@@ -159,7 +159,7 @@ const Dashboard = () => {
           token: access
         })
       })
-      const verificationData = await verification.json();
+      await verification.json();
       if (!verification.ok) {
         access = await refreshAccessToken()
         localStorage.setItem("token", access)
@@ -188,7 +188,8 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    handleGet();
+    const timer = setTimeout(handleGet, 0);
+    return () => clearTimeout(timer);
   }, []);
 
   return (

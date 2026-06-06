@@ -6,11 +6,11 @@ const Profile = () => {
   const s = {
     page: { fontFamily: "'Inter', system-ui, sans-serif", maxWidth: '680px' },
     header: { marginBottom: '28px' },
-    title: { fontSize: '26px', fontWeight: '700', color: '#1e293b', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
+    title: { fontSize: '26px', fontWeight: '800', color: '#0f172a', margin: '0 0 4px 0', fontFamily: "'Outfit', sans-serif" },
     subtitle: { fontSize: '13px', color: '#64748b', margin: 0 },
     card: {
       background: '#ffffff', border: '1px solid #e2e8f0',
-      borderRadius: '14px', padding: '28px', marginBottom: '20px',
+      borderRadius: '18px', padding: '28px', marginBottom: '20px',
     },
     cardHeaderRow: {
       display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '24px',
@@ -20,7 +20,7 @@ const Profile = () => {
       background: bg, display: 'flex', alignItems: 'center',
       justifyContent: 'center', color, flexShrink: 0,
     }),
-    cardTitle: { fontSize: '16px', fontWeight: '700', color: '#1e293b', margin: '0 0 2px 0' },
+    cardTitle: { fontSize: '16px', fontWeight: '800', color: '#0f172a', margin: '0 0 2px 0' },
     cardSub: { fontSize: '12px', color: '#64748b', margin: 0 },
     fieldLabel: {
       display: 'block', fontSize: '13px', fontWeight: '500',
@@ -29,13 +29,13 @@ const Profile = () => {
     input: {
       width: '100%', padding: '11px 14px',
       background: '#f1f3f9', border: '1.5px solid #f1f3f9',
-      borderRadius: '10px', fontSize: '13px', color: '#1e293b',
+      borderRadius: '10px', fontSize: '13px', color: '#0f172a',
       outline: 'none', boxSizing: 'border-box', marginBottom: '16px',
     },
     btnPrimary: {
       display: 'inline-flex', alignItems: 'center', gap: '6px',
       padding: '10px 20px',
-      background: 'linear-gradient(90deg, #5b7af9 0%, #2563eb 100%)',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 52%, #7c3aed 100%)',
       color: '#fff', border: 'none', borderRadius: '10px',
       fontSize: '13px', fontWeight: '600', cursor: 'pointer',
     },

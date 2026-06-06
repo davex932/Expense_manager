@@ -15,57 +15,64 @@ const Sidebar = ({ isOpen, onClose }) => {
   const s = {
     overlay: {
       position: 'fixed', inset: 0, zIndex: 40,
-      background: 'rgba(0,0,0,0.2)',
+      background: 'rgba(15, 23, 42, 0.34)',
+      backdropFilter: 'blur(4px)',
       display: isOpen ? 'block' : 'none',
     },
     aside: {
-      width: '220px',
-      minWidth: '220px',
+      width: '260px',
+      minWidth: '260px',
       height: '100%',
-      background: '#ffffff',
-      borderRight: '1px solid #e2e8f0',
+      background: 'rgba(255, 255, 255, 0.92)',
+      backdropFilter: 'blur(16px)',
+      borderRight: '1px solid rgba(226, 232, 240, 0.8)',
       display: 'flex',
       flexDirection: 'column',
       flexShrink: 0,
+      transition: 'transform 0.25s ease',
     },
     logoArea: {
-      padding: '20px 20px 16px',
+      padding: '24px 22px 20px',
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
-      borderBottom: '1px solid #f1f5f9',
+      borderBottom: '1px solid rgba(241, 245, 249, 0.9)',
     },
     logoBox: {
-      width: '36px', height: '36px',
-      background: 'linear-gradient(135deg, #5b7af9 0%, #2563eb 100%)',
-      borderRadius: '10px',
+      width: '42px', height: '42px',
+      background: 'linear-gradient(135deg, #60a5fa 0%, #2563eb 58%, #7c3aed 100%)',
+      borderRadius: '18px',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       flexShrink: 0,
+      boxShadow: '0 14px 28px rgba(37, 99, 235, 0.24)',
     },
     logoText: {
-      fontSize: '15px', fontWeight: '700', color: '#1e293b',
+      fontSize: '16px', fontWeight: '800', color: '#0f172a',
       fontFamily: "'Outfit', sans-serif",
+      letterSpacing: '-0.02em',
     },
     nav: {
-      padding: '16px 12px',
-      display: 'flex', flexDirection: 'column', gap: '4px',
+      padding: '18px 14px',
+      display: 'flex', flexDirection: 'column', gap: '8px',
       flex: 1,
     },
     navItemBase: {
       display: 'flex', alignItems: 'center', gap: '12px',
-      padding: '10px 14px',
-      borderRadius: '10px',
+      padding: '12px 14px',
+      borderRadius: '18px',
       fontSize: '14px',
-      fontWeight: '500',
+      fontWeight: '650',
       textDecoration: 'none',
-      transition: 'all 0.15s',
+      transition: 'all 0.2s ease',
       cursor: 'pointer',
-      border: 'none',
+      border: '1px solid transparent',
     },
     navItemActive: {
-      background: '#eff6ff',
+      background: 'linear-gradient(135deg, #eff6ff 0%, #eef2ff 100%)',
       color: '#2563eb',
-      fontWeight: '600',
+      fontWeight: '800',
+      borderColor: '#dbeafe',
+      boxShadow: '0 12px 24px rgba(37, 99, 235, 0.10)',
     },
     navItemInactive: {
       background: 'transparent',
@@ -76,22 +83,21 @@ const Sidebar = ({ isOpen, onClose }) => {
   return (
     <>
       <div style={s.overlay} onClick={onClose} />
-      <aside style={s.aside}>
-        {/* Logo */}
+      <aside className={`sidebar ${isOpen ? 'sidebar--open' : ''}`} style={s.aside}>
         <div style={s.logoArea}>
           <div style={s.logoBox}>
-            <Wallet size={18} color="#fff" />
+            <Wallet size={20} color="#fff" />
           </div>
           <span style={s.logoText}>Expense Manager</span>
         </div>
 
-        {/* Nav */}
         <nav style={s.nav}>
           {menuItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <NavLink
                 key={item.path}
+                className="sidebar-link"
                 to={item.path}
                 onClick={() => { if (window.innerWidth < 1024) onClose(); }}
                 style={{
