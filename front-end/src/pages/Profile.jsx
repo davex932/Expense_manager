@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, Lock } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../api';
 
 const Profile = () => {
 
@@ -33,7 +34,7 @@ const Profile = () => {
 
   const refreshAccessToken= async()=>{
     const refresh= localStorage.getItem('refresh');
-    const refreshResponse= await fetch("http://127.0.0.1:8000/auth/jwt/refresh/",{
+    const refreshResponse= await fetch(`${API_URL}/auth/jwt/refresh/`,{
       method: 'POST',
       headers:{
         'Accept': 'application/json',
@@ -54,7 +55,7 @@ const Profile = () => {
     try {
           
           let access= localStorage.getItem('token');
-          const verification= await fetch("http://127.0.0.1:8000/auth/jwt/verify/",{
+          const verification= await fetch(`${API_URL}/auth/jwt/verify/`,{
             method: 'POST',
             headers:{
               'Accept': 'application/json',
@@ -70,7 +71,7 @@ const Profile = () => {
             localStorage.setItem("token", access)
           } 
 
-          const UpdateResponse = await fetch("http://127.0.0.1:8000/auth/users/me/", {
+          const UpdateResponse = await fetch(`${API_URL}/auth/users/me/`, {
             method: 'PATCH',
             headers: {
               'Accept': 'application/json',
@@ -99,7 +100,7 @@ const Profile = () => {
     e.preventDefault();
     try{
       let access= localStorage.getItem('token');
-      const verification= await fetch("http://127.0.0.1:8000/auth/jwt/verify/",{
+      const verification= await fetch(`${API_URL}/auth/jwt/verify/`,{
         method: 'POST',
         headers:{
           'Accept': 'application/json',
@@ -117,7 +118,7 @@ const Profile = () => {
       if(passwordStatus.newPassword != passwordStatus.confirmNewPassword){
         toast.error("Les mots de passe ne correspondent pas");
       }else{
-        const UpdateResponsePassword = await fetch("http://127.0.0.1:8000/auth/users/set_password/", {
+        const UpdateResponsePassword = await fetch(`${API_URL}/auth/users/set_password/`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

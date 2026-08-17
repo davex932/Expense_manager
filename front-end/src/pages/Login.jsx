@@ -3,6 +3,7 @@ import { Wallet, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
+import { API_URL } from '../api';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const Login = () => {
       const idToken = credentialResponse.credential;
 
       const response = await fetch(
-        `http://127.0.0.1:8000/auth/google/?id_tokens=${idToken}`,
+        `${API_URL}/auth/google/?id_tokens=${idToken}`,
         {
           method: 'POST',
           headers: {
@@ -57,7 +58,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const loginResponse = await fetch('http://127.0.0.1:8000/auth/jwt/create/', {
+      const loginResponse = await fetch(`${API_URL}/auth/jwt/create/`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',

@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, Plus, ChevronDown, Coffee, Pencil, Trash2 } from 'lucide-react';
-
 import Modal from '../components/ui/Modal';
 import toast from 'react-hot-toast';
+import { API_URL } from '../api';
 
 const CustomSelect = ({ options, value, onChange, placeholder, style, variant = 'form' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -110,7 +110,7 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
 
   const refreshAccessToken = async () => {
     const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch("http://127.0.0.1:8000/auth/jwt/refresh/", {
+    const refreshResponse = await fetch("${API_URL}/auth/jwt/refresh/", {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -130,7 +130,7 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
     e.preventDefault();
     try {
       let access = localStorage.getItem('token');
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -149,8 +149,8 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
 
       const method = expenseToEdit ? 'PATCH' : 'POST';
       const url = expenseToEdit 
-        ? `http://127.0.0.1:8000/expenses/${expenseToEdit.id}/`
-        : "http://127.0.0.1:8000/expenses/";
+        ? `${API_URL}/expenses/${expenseToEdit.id}/`
+        : "${API_URL}/expenses/";
 
       const response = await fetch(url, {
         method: method,
@@ -271,7 +271,7 @@ const Expenses = () => {
 
   const refreshAccessToken = async () => {
     const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch("http://127.0.0.1:8000/auth/jwt/refresh/", {
+    const refreshResponse = await fetch("${API_URL}/auth/jwt/refresh/", {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -292,7 +292,7 @@ const Expenses = () => {
       let access = localStorage.getItem('token');
       if (!access) return;
 
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -308,7 +308,7 @@ const Expenses = () => {
         localStorage.setItem("token", access)
       }
 
-      const AddCategoryResponse = await fetch("http://127.0.0.1:8000/categories/", {
+      const AddCategoryResponse = await fetch("${API_URL}/categories/", {
         method: 'GET',
         headers: {
           'Accept': 'application/json',
@@ -334,7 +334,7 @@ const Expenses = () => {
       let access = localStorage.getItem('token');
       if (!access) return;
 
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -353,7 +353,7 @@ const Expenses = () => {
       if (categoryId) params.append('category', categoryId);
       if (search) params.append('search', search);
 
-      const url = `http://127.0.0.1:8000/expenses/${params.toString() ? `?${params.toString()}` : ''}`;
+      const url = `${API_URL}/expenses/${params.toString() ? `?${params.toString()}` : ''}`;
 
       const response = await fetch(url, {
         method: 'GET',
@@ -379,7 +379,7 @@ const Expenses = () => {
   const handleDelete = async (id) => {
     try {
       let access = localStorage.getItem('token');
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -395,7 +395,7 @@ const Expenses = () => {
         localStorage.setItem("token", access);
       }
 
-      const response = await fetch(`http://127.0.0.1:8000/expenses/${id}/`, {
+      const response = await fetch(`${API_URL}/expenses/${id}/`, {
         method: 'DELETE',
         headers: {
           'Accept': 'application/json',
@@ -559,4 +559,5 @@ const Expenses = () => {
 };
 
 export default Expenses;
+
 

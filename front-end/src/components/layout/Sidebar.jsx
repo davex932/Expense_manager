@@ -12,6 +12,7 @@ import {
   Settings,
   HelpCircle
 } from 'lucide-react';
+import { API_URL } from '../../api';
 
 const menuItems = [
   { title: 'Dashboard', path: '/', icon: LayoutDashboard },
@@ -31,7 +32,7 @@ const Sidebar = ({ isOpen, onClose }) => {
       const token = localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch("http://127.0.0.1:8000/auth/users/me/", {
+      const response = await fetch(`${API_URL}/auth/users/me/`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`,

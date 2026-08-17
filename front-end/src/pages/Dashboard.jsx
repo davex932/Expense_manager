@@ -3,6 +3,7 @@ import { DollarSign, TrendingUp, Receipt, Plus, ArrowUpRight } from 'lucide-reac
 import { useNavigate } from 'react-router-dom';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import Modal from '../components/ui/Modal';
+import { API_URL } from '../api';
 
 const AddExpenseModal = ({ isOpen, onClose }) => {
   const today = new Date().toLocaleDateString('fr-FR');
@@ -70,7 +71,7 @@ const Dashboard = () => {
 
   const refreshAccessToken = async () => {
     const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch("http://127.0.0.1:8000/auth/jwt/refresh/", {
+    const refreshResponse = await fetch(`${API_URL}/auth/jwt/refresh/`, {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -100,7 +101,7 @@ const Dashboard = () => {
       let access = localStorage.getItem('token');
       if (!access) return;
 
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -117,13 +118,13 @@ const Dashboard = () => {
       }
 
       const [dashboardRes, expensesRes, categoriesRes] = await Promise.all([
-        fetch("http://127.0.0.1:8000/dashboard/", {
+        fetch(`${API_URL}/dashboard/`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         }),
-        fetch("http://127.0.0.1:8000/expenses/", {
+        fetch(`${API_URL}/expenses/`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         }),
-        fetch("http://127.0.0.1:8000/dashboard/expenses-by-category/", {
+        fetch(`${API_URL}/dashboard/expenses-by-category/`, {
           headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
         })
       ]);

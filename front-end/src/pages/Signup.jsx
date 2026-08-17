@@ -3,6 +3,7 @@ import { Wallet, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import toast from 'react-hot-toast';
+import { API_URL } from '../api';
 
 const Field = ({ label, name, icon: Icon, type = 'text', placeholder, showToggle, show, onToggle, onChange, value }) => (
   <div>
@@ -54,7 +55,7 @@ const Signup = () => {
 
   const handleGoogleSuccess = async (tokenResponse) => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/auth/google/?id_tokens=${tokenResponse.access_token}/`, {
+      const response = await fetch(`${API_URL}/auth/google/?id_tokens=${tokenResponse.access_token}/`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -86,7 +87,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const registerResponse = await fetch("http://127.0.0.1:8000/auth/users/", {
+      const registerResponse = await fetch(`${API_URL}/auth/users/`, {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -99,7 +100,7 @@ const Signup = () => {
         const registerData = await registerResponse.json();
         console.log("Registration Success:", registerData);
 
-        const loginResponse = await fetch("http://127.0.0.1:8000/auth/jwt/create/", {
+        const loginResponse = await fetch(`${API_URL}/auth/jwt/create/`, {
           method: 'POST',
           headers: {
             'Accept': 'application/json',

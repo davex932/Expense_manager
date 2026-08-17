@@ -42,3 +42,5 @@ def budget_detail(request, pk):
         budget.delete()
         return Response(status= status.HTTP_204_NO_CONTENT)
     
+
+    

@@ -5,6 +5,7 @@ import {
   Search, Calendar
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { API_URL } from '../api';
 
 // Custom Dropdown Component for designing options (General Purpose)
 const CustomSelect = ({ value, onChange, options, variant = 'blue', icon: Icon, placeholder }) => {
@@ -207,7 +208,7 @@ const Budget = () => {
   const authFetch = async (url, options = {}) => {
     let token = localStorage.getItem('token');
     try {
-      const verification = await fetch("http://127.0.0.1:8000/auth/jwt/verify/", {
+      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token })
@@ -215,7 +216,7 @@ const Budget = () => {
       if (!verification.ok) {
         const refresh = localStorage.getItem('refresh');
         if (refresh) {
-          const refreshRes = await fetch("http://127.0.0.1:8000/auth/jwt/refresh/", {
+          const refreshRes = await fetch(`${API_URL}/auth/jwt/refresh/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ refresh })
@@ -243,8 +244,8 @@ const Budget = () => {
     try {
       setLoading(true);
       const [budRes, catRes] = await Promise.all([
-        authFetch(`http://127.0.0.1:8000/budgets/?month=${selectedMonth}&year=${currentYear}`),
-        authFetch("http://127.0.0.1:8000/categories/")
+        authFetch(`${API_URL}/budgets/?month=${selectedMonth}&year=${currentYear}`),
+        authFetch(`${API_URL}/categories/`)
       ]);
 
       if (budRes.ok) {
@@ -285,8 +286,8 @@ const Budget = () => {
 
     try {
       const url = budgetId 
-        ? `http://127.0.0.1:8000/budgets/${budgetId}/`
-        : "http://127.0.0.1:8000/budgets/";
+        ? `${API_URL}/budgets/${budgetId}/`
+        : `${API_URL}/budgets/`;
       
       const method = budgetId ? 'PATCH' : 'POST';
 
@@ -316,7 +317,7 @@ const Budget = () => {
 
   const handleDeleteBudget = async (budgetId) => {
     try {
-      const response = await authFetch(`http://127.0.0.1:8000/budgets/${budgetId}/`, {
+      const response = await authFetch(`${API_URL}/budgets/${budgetId}/`, {
         method: 'DELETE'
       });
 
