@@ -123,8 +123,11 @@ const Signup = () => {
         }
       } else {
         const errorData = await registerResponse.json();
-        const firstError = Object.values(errorData)[0];
-        toast.error(Array.isArray(firstError) ? firstError[0] : 'Échec de l\'inscription');
+        // Affiche le premier message d'erreur retourné par l'API
+        const firstKey = Object.keys(errorData)[0];
+        const firstError = errorData[firstKey];
+        const message = Array.isArray(firstError) ? firstError[0] : String(firstError);
+        toast.error(`${firstKey}: ${message}`);
       }
     } catch (err) {
       console.error("Erreur:", err);
