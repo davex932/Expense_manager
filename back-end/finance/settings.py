@@ -37,6 +37,10 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 _allowed = os.getenv('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = _allowed.split(',') if _allowed else ['*']
 
+# Nécessaire pour Render (proxy SSL)
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 
 # Application definition
 
