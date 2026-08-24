@@ -480,7 +480,7 @@ const Expenses = () => {
             value={filterCategoryId}
             onChange={setFilterCategoryId}
             options={categories.map(c => ({ value: c.id, label: c.name }))}
-            style={{ width: '100%', minWidth: '200px' }}
+            style={{ width: '100%' }}
           />
         </div>
       </div>

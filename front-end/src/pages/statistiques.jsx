@@ -385,7 +385,7 @@ const StatisticsPage = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-3 gap-3 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col items-center text-center">
               <p className="text-xs font-bold text-slate-400 mb-2">Budget</p>
               <p className="text-lg font-extrabold text-slate-800">{Math.floor(totalBudget)}</p>
