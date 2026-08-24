@@ -34,8 +34,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-_allowed = os.getenv('ALLOWED_HOSTS', '')
-ALLOWED_HOSTS = _allowed.split(',') if _allowed else ['*']
+ALLOWED_HOSTS = ['*']
 
 # Nécessaire pour Render (proxy SSL)
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
