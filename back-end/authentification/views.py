@@ -26,7 +26,12 @@ def get_tokens_for_user(user):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def google_login(request):
-    id_token_str = request.GET.get('id_tokens')
+    id_token_str = (
+        request.data.get('id_tokens') or 
+        request.data.get('id_token') or 
+        request.query_params.get('id_tokens') or 
+        request.query_params.get('id_token')
+    )
     
     logger.info(f"Google login attempt - Token received: {id_token_str[:50] if id_token_str else 'None'}...")
     logger.info(f"GOOGLE_CLIENT_ID configured: {settings.GOOGLE_CLIENT_ID}")
@@ -58,11 +63,21 @@ def google_login(request):
         logger.warning("No email provided by Google")
         return Response({'error': 'Email non fourni par Google'}, status=status.HTTP_400_BAD_REQUEST)
     
-    user, created = User.objects.get_or_create(
-        username=first_name + last_name, 
-        defaults={'first_name': first_name, 'last_name': last_name, 'email': email}
-    )
-    logger.info(f"User {'created' if created else 'retrieved'}: {user.username}")
+    user = User.objects.filter(email=email).first()
+    if not user:
+        raw_username = (first_name + last_name).strip() or email.split('@')[0]
+        username = raw_username
+        counter = 1
+        while User.objects.filter(username=username).exists():
+            username = f"{raw_username}_{counter}"
+            counter += 1
+        user = User.objects.create(
+            username=username,
+            email=email,
+            first_name=first_name,
+            last_name=last_name
+        )
+    logger.info(f"User retrieved/created: {user.username}")
 
     tokens = get_tokens_for_user(user)
 

@@ -32,3 +32,7 @@ def dashboard_expenses_by_category(request):
     category= Category.objects.filter(user= user)
     category_serialized= StatisticExpenseCategorySerializer(category, many= True, context={'request': request})
     return Response(category_serialized.data, status= status.HTTP_200_OK)
+
+
+
+

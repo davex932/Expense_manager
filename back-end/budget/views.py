@@ -17,13 +17,16 @@ def budget_list(request):
             budget_serialized.save()
             return Response(budget_serialized.data, status= status.HTTP_201_CREATED)
         return Response(budget_serialized.errors, status= status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'GET':
-        month= request.query_params.get('month')
-        year= request.query_params.get('year')
-        user= request.user
-        budgets= Budget.objects.filter(user= user, month= month, year= year)
-        budgets_serialized= BudgetSerializer(budgets, many= True)
-        return Response(budgets_serialized.data, status= status.HTTP_200_OK)
+        month = request.query_params.get('month')
+        year = request.query_params.get('year')
+        user = request.user
+        budgets = Budget.objects.filter(user=user)
+        if month:
+            budgets = budgets.filter(month=month)
+        if year:
+            budgets = budgets.filter(year=year)
+        budgets_serialized = BudgetSerializer(budgets, many=True)
+        return Response(budgets_serialized.data, status=status.HTTP_200_OK)
     
 @api_view(['PATCH', 'DELETE'])
 def budget_detail(request, pk):

@@ -11,7 +11,10 @@ class StatisticExpenseCategorySerializer(serializers.ModelSerializer):
         fields= ['id', 'name', 'color', 'Expense_by_category']
 
     def get_Expense_by_category(self, obj):
-        user= self.context['request'].user
-        Expenses= Expense.objects.filter(user= user, category= obj.id)
-        total= sum(expense.amount for expense in Expenses)
+        request = self.context.get('request')
+        if not request or not hasattr(request, 'user') or not request.user.is_authenticated:
+            return 0
+        user = request.user
+        Expenses = Expense.objects.filter(user=user, category=obj.id)
+        total = sum((expense.amount for expense in Expenses), 0)
         return total

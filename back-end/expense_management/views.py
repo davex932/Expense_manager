@@ -18,9 +18,7 @@ def expense_list(request):
         if category:
             expenses= expenses.filter(category_id=category)
         if search:
-            expenses= expenses.annotate(
-                search=SearchVector('description'),
-            ).filter(search= search)
+            expenses = expenses.filter(description__icontains=search)
         expenses_serialized= ExpenseSerializer(expenses, many= True)
         return Response(expenses_serialized.data, status= status.HTTP_200_OK)
     elif request.method == 'POST':
