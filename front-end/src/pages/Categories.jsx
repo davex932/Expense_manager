@@ -30,74 +30,65 @@ const AddCategoryModal = ({ isOpen, onClose, onCategoryAdded, categoryToEdit }) 
     setStatus({ ...status, [name]: value });
   };
 
-  const refreshAccessToken = async () => {
-    const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch(`${API_URL}/auth/jwt/refresh/`, {
-      method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh }),
+  const authFetch = async (url, options = {}) => {
+    let token = localStorage.getItem('token');
+    try {
+      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      if (!verification.ok) {
+        const refresh = localStorage.getItem('refresh');
+        if (refresh) {
+          const refreshRes = await fetch(`${API_URL}/auth/jwt/refresh/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh })
+          });
+          if (refreshRes.ok) {
+            token = (await refreshRes.json()).access;
+            localStorage.setItem("token", token);
+          }
+        }
+      }
+    } catch (e) {}
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || token}`,
+        ...options.headers
+      }
     });
-    const data = await refreshResponse.json();
-    localStorage.setItem('token', data.access);
-    return data.access;
   };
 
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     try {
-      let access = localStorage.getItem('token');
-      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: access }),
-      });
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem('token', access);
-      }
+      const url = categoryToEdit 
+        ? `${API_URL}/categories/${categoryToEdit.id}/`
+        : `${API_URL}/categories/`;
+      const method = categoryToEdit ? 'PATCH' : 'POST';
 
-      if (categoryToEdit) {
-        const res = await fetch(`${API_URL}/categories/${categoryToEdit.id}/`, {
-          method: 'PATCH',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({ name: status.name, color: selectedColor }),
-        });
-        if (res.ok) {
-          toast.success('Modification de la categorie avec succès !');
-          setStatus({ name: '' });
-          setSelectedColor(COLORS[0]);
-          if (onCategoryAdded) onCategoryAdded();
-          onClose();
-        } else {
-          toast.error('Échec de la modification de la categorie');
-        }
+      const res = await authFetch(url, {
+        method: method,
+        body: JSON.stringify({ name: status.name, color: selectedColor }),
+      });
+
+      if (res.ok) {
+        toast.success(categoryToEdit ? 'Modification de la catégorie avec succès !' : 'Ajout de la catégorie avec succès !');
+        setStatus({ name: '' });
+        setSelectedColor(COLORS[0]);
+        if (onCategoryAdded) onCategoryAdded();
+        onClose();
       } else {
-        const res = await fetch(`${API_URL}/categories/`, {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          },
-          body: JSON.stringify({ name: status.name, color: selectedColor }),
-        });
-        if (res.ok) {
-          toast.success('Ajout de la categorie avec succès !');
-          setStatus({ name: '' });
-          setSelectedColor(COLORS[0]);
-          if (onCategoryAdded) onCategoryAdded();
-          onClose();
-        } else {
-          toast.error("Échec de l'ajout de la categorie");
-        }
+        toast.error(categoryToEdit ? 'Échec de la modification de la catégorie' : "Échec de l'ajout de la catégorie");
       }
     } catch (err) {
-      toast.error(categoryToEdit ? 'Erreur lors de la modification de la categorie' : "Erreur lors de l'ajout de la categorie");
+      toast.error(categoryToEdit ? 'Erreur lors de la modification de la catégorie' : "Erreur lors de l'ajout de la catégorie");
       console.error('Erreur:', err);
     }
   };
@@ -152,60 +143,64 @@ const Categories = () => {
   const openAddModal = () => { setCategoryToEdit(null); setShowModal(true); };
   const openEditModal = (cat) => { setCategoryToEdit(cat); setShowModal(true); };
 
-  const refreshAccessToken = async () => {
-    const refresh = localStorage.getItem('refresh');
-    const res = await fetch(`${API_URL}/auth/jwt/refresh/`, {
-      method: 'POST',
-      headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-      body: JSON.stringify({ refresh }),
+  const authFetch = async (url, options = {}) => {
+    let token = localStorage.getItem('token');
+    try {
+      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+      if (!verification.ok) {
+        const refresh = localStorage.getItem('refresh');
+        if (refresh) {
+          const refreshRes = await fetch(`${API_URL}/auth/jwt/refresh/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh })
+          });
+          if (refreshRes.ok) {
+            token = (await refreshRes.json()).access;
+            localStorage.setItem("token", token);
+          }
+        }
+      }
+    } catch (e) {}
+    
+    return fetch(url, {
+      ...options,
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token') || token}`,
+        ...options.headers
+      }
     });
-    const data = await res.json();
-    localStorage.setItem('token', data.access);
-    return data.access;
   };
 
   const handleGet = async () => {
     try {
-      let access = localStorage.getItem('token');
-      if (!access) return;
-
-      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: access }),
-      });
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem('token', access);
-      }
-
-      const res = await fetch(`${API_URL}/categories/`, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-      });
+      const res = await authFetch(`${API_URL}/categories/`);
 
       if (res.ok) {
         const data = await res.json();
         setCategories(data.map((category) => ({
           name: category.name,
           icon: Coffee,
-          count: 42,
-          total: '$1,240',
-          budget: 75,
+          count: category.expenses_count || 0,
+          total: `${parseFloat(category.total_amount || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`,
+          budget: category.budget_percentage || 0,
           iconBg: '#fff7ed',
-          iconColor: category.color,
+          iconColor: category.color || '#3b82f6',
           id: category.id,
         })));
       } else {
-        console.error('Échec de la récupération des categories');
+        console.error('Échec de la récupération des catégories');
+        setCategories([]);
       }
     } catch (err) {
-      console.error('Erreur lors de la récupération des categories:', err);
+      console.error('Erreur lors de la récupération des catégories:', err);
+      setCategories([]);
     }
   };
 
@@ -213,29 +208,12 @@ const Categories = () => {
 
   const handleDelete = async (id) => {
     try {
-      let access = localStorage.getItem('token');
-      const verification = await fetch(`${API_URL}/auth/jwt/verify/`, {
-        method: 'POST',
-        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: access }),
-      });
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem('token', access);
-      }
-
-      const res = await fetch(`${API_URL}/categories/${id}/`, {
+      const res = await authFetch(`${API_URL}/categories/${id}/`, {
         method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
       });
 
       if (res.ok) {
-        toast.success('suppression de la catégorie avec succès !');
+        toast.success('Suppression de la catégorie avec succès !');
         handleGet();
       } else {
         toast.error('Échec de la suppression de la catégorie');

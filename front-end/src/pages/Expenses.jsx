@@ -108,57 +108,54 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
     })
   }
 
-  const refreshAccessToken = async () => {
-    const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch("${API_URL}/auth/jwt/refresh/", {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        refresh: refresh
-      })
-    })
-    const data = await refreshResponse.json();
-    localStorage.setItem("token", data.access)
+  const authFetch = async (url, options = {}) => {
+    let token = localStorage.getItem("token");
+    try {
+      const v = await fetch(`${API_URL}/auth/jwt/verify/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+      if (!v.ok) {
+        const r = localStorage.getItem("refresh");
+        if (r) {
+          const res = await fetch(`${API_URL}/auth/jwt/refresh/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh: r })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            token = data.access;
+            localStorage.setItem("token", token);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Auth verify error", e);
+    }
 
-    return data.access
-  }
+    return fetch(url, {
+      ...options,
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token") || token}`,
+        ...options.headers
+      }
+    });
+  };
 
   const handleSubmitPost = async (e) => {
     e.preventDefault();
     try {
-      let access = localStorage.getItem('token');
-      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: access
-        })
-      });
-
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem("token", access);
-      }
-
       const method = expenseToEdit ? 'PATCH' : 'POST';
       const url = expenseToEdit 
         ? `${API_URL}/expenses/${expenseToEdit.id}/`
-        : "${API_URL}/expenses/";
+        : `${API_URL}/expenses/`;
 
-      const response = await fetch(url, {
+      const response = await authFetch(url, {
         method: method,
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: JSON.stringify({
           amount: status.amount,
           category: status.category,
@@ -245,12 +242,6 @@ const AddExpenseModal = ({ isOpen, onClose, categories, expenseToEdit, onRefresh
   );
 };
 
-const mockExpenses = [
-  { id: 1, description: 'Courses alimentaires', amount: '45.50', date: '2026-03-18', category_name: 'Alimentation', category_color: '#3b82f6' },
-  { id: 2, description: 'Loyer Mars', amount: '1200.00', date: '2026-03-01', category_name: 'Logement', category_color: '#ef4444' },
-  { id: 3, description: 'Abonnement Netflix', amount: '15.99', date: '2026-03-15', category_name: 'Divertissement', category_color: '#22c55e' },
-];
-
 const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState([]);
@@ -267,148 +258,88 @@ const Expenses = () => {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
+  const authFetch = async (url, options = {}) => {
+    let token = localStorage.getItem("token");
+    try {
+      const v = await fetch(`${API_URL}/auth/jwt/verify/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token })
+      });
+      if (!v.ok) {
+        const r = localStorage.getItem("refresh");
+        if (r) {
+          const res = await fetch(`${API_URL}/auth/jwt/refresh/`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ refresh: r })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            token = data.access;
+            localStorage.setItem("token", token);
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Auth verify error", e);
+    }
 
-
-  const refreshAccessToken = async () => {
-    const refresh = localStorage.getItem('refresh');
-    const refreshResponse = await fetch("${API_URL}/auth/jwt/refresh/", {
-      method: 'POST',
+    return fetch(url, {
+      ...options,
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        refresh: refresh
-      })
-    })
-    const data = await refreshResponse.json();
-    localStorage.setItem("token", data.access)
-
-    return data.access
-  }
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token") || token}`,
+        ...options.headers
+      }
+    });
+  };
 
   const handleGetCategories = async () => {
     try {
-      let access = localStorage.getItem('token');
-      if (!access) return;
-
-      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: access
-        })
-      })
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken()
-        localStorage.setItem("token", access)
-      }
-
-      const AddCategoryResponse = await fetch("${API_URL}/categories/", {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-
-      if (AddCategoryResponse.ok) {
-        const AddCategoryData = await AddCategoryResponse.json();
-        setCategories(AddCategoryData);
+      const response = await authFetch(`${API_URL}/categories/`);
+      if (response.ok) {
+        const data = await response.json();
+        setCategories(data || []);
       } else {
-        console.error("Échec de la récupération des categories");
+        console.error("Échec de la récupération des catégories");
       }
-
     } catch (err) {
-      console.error("Erreur lors de la récupération des categories:", err);
+      console.error("Erreur lors de la récupération des catégories:", err);
     }
   };
 
   const handleGetExpenses = async (categoryId = "", search = "") => {
     try {
-      let access = localStorage.getItem('token');
-      if (!access) return;
-
-      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ token: access })
-      });
-
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem("token", access);
-      }
-
       const params = new URLSearchParams();
       if (categoryId) params.append('category', categoryId);
       if (search) params.append('search', search);
 
       const url = `${API_URL}/expenses/${params.toString() ? `?${params.toString()}` : ''}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-
-
+      const response = await authFetch(url);
 
       if (response.ok) {
         const data = await response.json();
         setExpenses(data || []);
+      } else {
+        setExpenses([]);
       }
-
     } catch (err) {
-      console.error("Erreur lors de la récupération des depenses:", err);
+      console.error("Erreur lors de la récupération des dépenses:", err);
+      setExpenses([]);
     }
   };
 
   const handleDelete = async (id) => {
     try {
-      let access = localStorage.getItem('token');
-      const verification = await fetch("${API_URL}/auth/jwt/verify/", {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          token: access
-        })
-      });
-      const verificationData = await verification.json();
-      if (!verificationData) {
-        access = await refreshAccessToken();
-        localStorage.setItem("token", access);
-      }
-
-      const response = await fetch(`${API_URL}/expenses/${id}/`, {
-        method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
+      const response = await authFetch(`${API_URL}/expenses/${id}/`, {
+        method: 'DELETE'
       });
 
       if (response.ok) {
         toast.success("Suppression de la dépense avec succès !");
         handleGetExpenses(filterCategoryId, debouncedSearchQuery);
-
-
       } else {
         toast.error("Échec de la suppression de la dépense");
       }

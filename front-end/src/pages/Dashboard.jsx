@@ -5,60 +5,7 @@ import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import Modal from '../components/ui/Modal';
 import { API_URL } from '../api';
 
-const AddExpenseModal = ({ isOpen, onClose }) => {
-  const today = new Date().toLocaleDateString('fr-FR');
-  
-  return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Expense">
-      <form onSubmit={e => { e.preventDefault(); onClose(); }} className="space-y-4">
-        <div>
-          <label className="block text-[13px] font-semibold text-slate-800 mb-1.5">Amount *</label>
-          <input 
-            type="number" step="0.01" placeholder="0.00" 
-            className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-[13px] text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-[13px] font-semibold text-slate-800 mb-1.5">Category *</label>
-          <select className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-[13px] text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all appearance-none cursor-pointer">
-            <option value="">Select a category</option>
-            <option>Food &amp; Drinks</option>
-            <option>Transport</option>
-            <option>Entertainment</option>
-            <option>Healthcare</option>
-            <option>Shopping</option>
-            <option>Housing</option>
-          </select>
-        </div>
-        <div>
-          <label className="block text-[13px] font-semibold text-slate-800 mb-1.5">Date *</label>
-          <input 
-            type="text" defaultValue={today} 
-            className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-[13px] text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all"
-          />
-        </div>
-        <div>
-          <label className="block text-[13px] font-semibold text-slate-800 mb-1.5">Description</label>
-          <textarea 
-            placeholder="Add a note about this expense..." 
-            className="w-full px-3.5 py-2.5 bg-slate-50 border-2 border-slate-200 rounded-xl text-[13px] text-slate-800 outline-none focus:border-blue-500 focus:bg-white transition-all min-h-[80px] resize-y font-sans"
-          />
-        </div>
-        <div className="flex gap-3 mt-6">
-          <button type="submit" className="flex-1 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity shadow-md shadow-blue-500/20">
-            Add Expense
-          </button>
-          <button type="button" onClick={onClose} className="px-5 py-3 bg-white border border-slate-200 rounded-xl text-sm font-semibold text-slate-500 hover:bg-slate-50 transition-colors">
-            Cancel
-          </button>
-        </div>
-      </form>
-    </Modal>
-  );
-};
-
 const Dashboard = () => {
-  const [showModal, setShowModal] = useState(false);
   const [dashboardData, setDashboardData] = useState({
     total_expenses: 0.0,
     total_expenses_count: 0,
@@ -80,19 +27,19 @@ const Dashboard = () => {
       body: JSON.stringify({
         refresh: refresh
       })
-    })
+    });
     const data = await refreshResponse.json();
-    localStorage.setItem("token", data.access)
+    localStorage.setItem("token", data.access);
 
-    return data.access
-  }
+    return data.access;
+  };
 
   const CHART_COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', '#f43f5e', '#06b6d4', '#84cc16'];
 
   const stats = [
-    { label: 'Total Expenses', amount: `${parseFloat(dashboardData.total_expenses || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €`, sub: 'All time', icon: DollarSign, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
-    { label: 'This Month', amount: `${parseFloat(dashboardData.total_expenses_current_month || 0).toLocaleString('fr-FR', { minimumFractionDigits: 2 })} €`, sub: 'Current month', icon: TrendingUp, iconBg: 'bg-green-50', iconColor: 'text-green-500' },
-    { label: 'Transactions', amount: String(dashboardData.total_expenses_count), sub: 'Total records', icon: Receipt, iconBg: 'bg-fuchsia-50', iconColor: 'text-fuchsia-500' },
+    { label: 'Total des Dépenses', amount: `${parseFloat(dashboardData.total_expenses || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`, sub: 'Historique complet', icon: DollarSign, iconBg: 'bg-blue-50', iconColor: 'text-blue-600' },
+    { label: 'Ce mois-ci', amount: `${parseFloat(dashboardData.total_expenses_current_month || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`, sub: 'Mois en cours', icon: TrendingUp, iconBg: 'bg-green-50', iconColor: 'text-green-500' },
+    { label: 'Transactions', amount: String(dashboardData.total_expenses_count || 0), sub: 'Total des enregistrements', icon: Receipt, iconBg: 'bg-fuchsia-50', iconColor: 'text-fuchsia-500' },
   ];
 
   const handleGet = async () => {
@@ -166,20 +113,18 @@ const Dashboard = () => {
 
   return (
     <div className="font-sans">
-      <AddExpenseModal isOpen={showModal} onClose={() => setShowModal(false)} />
-      
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h2 className="text-[26px] font-bold text-slate-800 font-display mb-1">Dashboard</h2>
-          <p className="text-[13px] text-slate-500">Overview of your expenses</p>
+          <h2 className="text-[26px] font-bold text-slate-800 font-display mb-1">Tableau de bord</h2>
+          <p className="text-[13px] text-slate-500">Vue d'ensemble de vos finances</p>
         </div>
         <button 
-          onClick={() => setShowModal(true)}
+          onClick={() => navigate('/expenses')}
           className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl text-sm font-semibold shadow-[0_4px_12px_rgba(37,99,235,0.2)] hover:shadow-[0_6px_16px_rgba(37,99,235,0.3)] hover:-translate-y-0.5 transition-all w-fit"
         >
           <Plus size={16} />
-          Add Expense
+          Ajouter une dépense
         </button>
       </div>
 
