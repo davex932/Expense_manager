@@ -138,6 +138,7 @@ const AddCategoryModal = ({ isOpen, onClose, onCategoryAdded, categoryToEdit }) 
 const Categories = () => {
   const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [categoryToEdit, setCategoryToEdit] = useState(null);
 
   const openAddModal = () => { setCategoryToEdit(null); setShowModal(true); };
@@ -180,6 +181,7 @@ const Categories = () => {
 
   const handleGet = async () => {
     try {
+      setLoading(true);
       const res = await authFetch(`${API_URL}/categories/`);
 
       if (res.ok) {
@@ -201,6 +203,8 @@ const Categories = () => {
     } catch (err) {
       console.error('Erreur lors de la récupération des catégories:', err);
       setCategories([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -223,6 +227,15 @@ const Categories = () => {
       console.error('Erreur:', err);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 text-sm font-medium gap-3">
+        <div className="w-6 h-6 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+        Chargement des catégories...
+      </div>
+    );
+  }
 
   return (
     <div className="font-sans pb-10">

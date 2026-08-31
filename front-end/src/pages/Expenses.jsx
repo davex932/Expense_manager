@@ -246,6 +246,7 @@ const Expenses = () => {
   const [showModal, setShowModal] = useState(false);
   const [categories, setCategories] = useState([]);
   const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [filterCategoryId, setFilterCategoryId] = useState("");
   const [expenseToEdit, setExpenseToEdit] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -312,6 +313,7 @@ const Expenses = () => {
 
   const handleGetExpenses = async (categoryId = "", search = "") => {
     try {
+      setLoading(true);
       const params = new URLSearchParams();
       if (categoryId) params.append('category', categoryId);
       if (search) params.append('search', search);
@@ -328,6 +330,8 @@ const Expenses = () => {
     } catch (err) {
       console.error("Erreur lors de la récupération des dépenses:", err);
       setExpenses([]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -359,7 +363,6 @@ const Expenses = () => {
     setShowModal(true);
   };
 
-
   React.useEffect(() => {
     handleGetCategories();
   }, []);
@@ -367,6 +370,15 @@ const Expenses = () => {
   React.useEffect(() => {
     handleGetExpenses(filterCategoryId, debouncedSearchQuery);
   }, [filterCategoryId, debouncedSearchQuery]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-slate-500 text-sm font-medium gap-3">
+        <div className="w-6 h-6 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+        Chargement des dépenses...
+      </div>
+    );
+  }
 
   return (
     <div className="font-sans pb-10">
