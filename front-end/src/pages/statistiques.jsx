@@ -104,24 +104,18 @@ const CustomSelect = ({ value, onChange, options, variant = 'white', icon: Icon,
   );
 };
 
-// ─── MOCK DATA ──────────────────────────────────────────────────────────────
+// ─── EMPTY STATES ────────────────────────────────────────────────────────────
 
-const MOCK_OVERVIEW = { total_expenses: 285400, mean_daily: 9206, expense_max: 52000, expenses_count: 31, percentage_change: -12, percentage_change_moyenne_daily: 3 };
-const MOCK_CATEGORY = [
-  { category_name: "Alimentation", expense_by_category: 85000, category_color: "#3b82f6" },
-  { category_name: "Transport", expense_by_category: 42000, category_color: "#10b981" },
-  { category_name: "Logement", expense_by_category: 120000, category_color: "#f59e0b" },
-  { category_name: "Shopping", expense_by_category: 22000, category_color: "#ec4899" },
-  { category_name: "Loisirs", expense_by_category: 11000, category_color: "#8b5cf6" },
-  { category_name: "Santé", expense_by_category: 5400, category_color: "#f43f5e" }
-];
-const MOCK_DAILY = Array.from({ length: 20 }, (_, i) => ({ date: `2026-03-${String(i + 1).padStart(2, "0")}`, amount: Math.floor(Math.random() * 20000) + 2000 }));
-const MOCK_BUDGET = { amount: 350000, month: 3, year: 2026 };
-const MOCK_RANKING = [
-  { amount: "45000.25", description: "Loyer", date: "2026-03-01", category_color: "#f59e0b" },
-  { amount: "12000.00", description: "Courses Aldi", date: "2026-03-05", category_color: "#3b82f6" },
-  { amount: "8500.00", description: "Essence", date: "2026-03-12", category_color: "#10b981" }
-];
+const EMPTY_OVERVIEW = { 
+  total_expenses: 0, 
+  mean_daily: 0, 
+  expense_max: 0, 
+  expenses_count: 0, 
+  percentage_change: 0, 
+  percentage_change_moyenne_daily: 0,
+  statut_max: "Aucune",
+  statut_count: "Aucune"
+};
 
 // ─── PAGE COMPONENT ──────────────────────────────────────────────────────────
 
@@ -130,7 +124,7 @@ const StatisticsPage = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   const [filters, setFilters] = useState({ month: new Date().getMonth() + 1, year: new Date().getFullYear() });
 
-  const [data, setData] = useState({ overview: null, categories: null, daily: [], budget: null, ranking: [] });
+  const [data, setData] = useState({ overview: EMPTY_OVERVIEW, categories: [], daily: [], budget: [], ranking: [] });
   const [loading, setLoading] = useState(true);
 
   const authFetch = async (url, options = {}) => {
@@ -159,7 +153,7 @@ const StatisticsPage = () => {
         authFetch(`${BASE_URL}/statistic/expenses-ranking/?month=${m}&year=${y}`),
       ]);
 
-      let dailyStats = MOCK_DAILY;
+      let dailyStats = [];
       if (day.ok) {
         const rawDaily = await day.json();
         dailyStats = Object.entries(rawDaily).map(([key, value]) => {
@@ -172,14 +166,14 @@ const StatisticsPage = () => {
       }
 
       setData({
-        overview: ov.ok ? await ov.json() : MOCK_OVERVIEW,
-        categories: cat.ok ? await cat.json() : MOCK_CATEGORY,
+        overview: ov.ok ? await ov.json() : EMPTY_OVERVIEW,
+        categories: cat.ok ? await cat.json() : [],
         daily: dailyStats,
-        budget: bud.ok ? await bud.json() : [MOCK_BUDGET],
-        ranking: rnk.ok ? await rnk.json() : MOCK_RANKING
+        budget: bud.ok ? await bud.json() : [],
+        ranking: rnk.ok ? await rnk.json() : []
       });
     } catch {
-      setData({ overview: MOCK_OVERVIEW, categories: MOCK_CATEGORY, daily: MOCK_DAILY, budget: [MOCK_BUDGET], ranking: MOCK_RANKING });
+      setData({ overview: EMPTY_OVERVIEW, categories: [], daily: [], budget: [], ranking: [] });
     } finally {
       setLoading(false);
     }
@@ -284,22 +278,29 @@ const StatisticsPage = () => {
             </div>
           </div>
           <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie 
-                  data={cats} 
-                  innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="expense_by_category" nameKey="category_name"
-                >
-                  {cats.map((c, i) => <Cell key={i} fill={c.category_color || CHART_COLORS[i % CHART_COLORS.length]} />)}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.1)', padding: '12px' }}
-                  itemStyle={{ fontSize: '12px', fontWeight: '700' }}
-                  formatter={(value) => `${parseFloat(value).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`}
-                />
-                <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '600', paddingTop: '10px' }} />
-              </PieChart>
-            </ResponsiveContainer>
+            {cats && cats.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie 
+                    data={cats} 
+                    innerRadius={70} outerRadius={100} paddingAngle={5} dataKey="expense_by_category" nameKey="category_name"
+                  >
+                    {cats.map((c, i) => <Cell key={i} fill={c.category_color || CHART_COLORS[i % CHART_COLORS.length]} />)}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ background: '#fff', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 8px 30px rgba(0,0,0,0.1)', padding: '12px' }}
+                    itemStyle={{ fontSize: '12px', fontWeight: '700' }}
+                    formatter={(value) => `${parseFloat(value).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ fontSize: '12px', fontWeight: '600', paddingTop: '10px' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex flex-col items-center justify-center text-slate-400 text-xs font-semibold gap-2">
+                <PieIcon size={32} className="text-slate-300" />
+                <span>Aucune dépense enregistrée pour ce mois</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -314,24 +315,30 @@ const StatisticsPage = () => {
               <p className="text-xs font-medium text-slate-400 mt-0.5">Classement par montant</p>
             </div>
           </div>
-          <div className="flex flex-col gap-4">
-            {cats.sort((a,b) => b.expense_by_category - a.expense_by_category).slice(0, 6).map((c, i) => {
-              const p = spent > 0 ? (c.expense_by_category / spent) * 100 : 0;
-              return (
-                <div key={c.category_name}>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-600">{c.category_name}</span>
-                    <span className="text-xs font-extrabold text-slate-800">{fmt(c.expense_by_category)}</span>
+          <div className="flex flex-col gap-4 min-h-[240px] justify-center">
+            {cats && cats.length > 0 ? (
+              cats.sort((a,b) => b.expense_by_category - a.expense_by_category).slice(0, 6).map((c, i) => {
+                const p = spent > 0 ? (c.expense_by_category / spent) * 100 : 0;
+                return (
+                  <div key={c.category_name || i}>
+                    <div className="flex justify-between mb-2">
+                      <span className="text-xs font-bold text-slate-600">{c.category_name}</span>
+                      <span className="text-xs font-extrabold text-slate-800">{fmt(c.expense_by_category)}</span>
+                    </div>
+                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full rounded-full transition-all duration-700 ease-out" 
+                        style={{ width: `${p}%`, backgroundColor: c.category_color || CHART_COLORS[i % CHART_COLORS.length] }} 
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-700 ease-out" 
-                      style={{ width: `${p}%`, backgroundColor: c.category_color || CHART_COLORS[i % CHART_COLORS.length] }} 
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <div className="text-center text-slate-400 text-xs font-semibold py-8">
+                Aucune catégorie à afficher
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -351,25 +358,31 @@ const StatisticsPage = () => {
             </div>
           </div>
           <div className="h-[240px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data.daily.map(d => ({...d, date: d.date.split('-')[2]}))}>
-                <defs>
-                  <linearGradient id="areaColor" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
-                  </linearGradient>
-                </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={10} />
-                <YAxis hide />
-                <Tooltip 
-                   contentStyle={{ background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: '10px' }}
-                   labelStyle={{ fontSize: '11px', fontWeight: '600', color: '#64748b', marginBottom: '4px' }}
-                   formatter={(value) => `${parseFloat(value).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`}
-                />
-                <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#areaColor)" />
-              </AreaChart>
-            </ResponsiveContainer>
+            {data.daily && data.daily.length > 0 ? (
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={data.daily.map(d => ({...d, date: d.date ? d.date.split('-')[2] : ''}))}>
+                  <defs>
+                    <linearGradient id="areaColor" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                  <XAxis dataKey="date" axisLine={false} tickLine={false} tick={{ fontSize: 10, fill: '#94a3b8' }} dy={10} />
+                  <YAxis hide />
+                  <Tooltip 
+                     contentStyle={{ background: '#fff', borderRadius: '10px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px rgba(0,0,0,0.05)', padding: '10px' }}
+                     labelStyle={{ fontSize: '11px', fontWeight: '600', color: '#64748b', marginBottom: '4px' }}
+                     formatter={(value) => `${parseFloat(value).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`}
+                  />
+                  <Area type="monotone" dataKey="amount" stroke="#3b82f6" strokeWidth={3} fillOpacity={1} fill="url(#areaColor)" />
+                </AreaChart>
+              </ResponsiveContainer>
+            ) : (
+              <div className="h-full flex items-center justify-center text-slate-400 text-xs font-semibold">
+                Aucune donnée quotidienne
+              </div>
+            )}
           </div>
         </div>
 
@@ -429,26 +442,32 @@ const StatisticsPage = () => {
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-bold text-slate-800">Dépenses les Plus Élevées</h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.ranking.slice(0, 6).map((item, i) => (
-          <div key={i} className="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all hover:-translate-y-1 cursor-pointer">
-            <div 
-              className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-extrabold"
-              style={{ backgroundColor: `${item.category_color || CHART_COLORS[i % CHART_COLORS.length]}15`, color: item.category_color || CHART_COLORS[i % CHART_COLORS.length] }}
-            >
-              {i+1}
+      {data.ranking && data.ranking.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {data.ranking.slice(0, 6).map((item, i) => (
+            <div key={i} className="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md hover:border-slate-200 transition-all hover:-translate-y-1 cursor-pointer">
+              <div 
+                className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 text-sm font-extrabold"
+                style={{ backgroundColor: `${item.category_color || CHART_COLORS[i % CHART_COLORS.length]}15`, color: item.category_color || CHART_COLORS[i % CHART_COLORS.length] }}
+              >
+                {i+1}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-bold text-slate-800 truncate">{item.description || `Achat #${i+1}`}</p>
+                <p className="text-xs font-semibold text-slate-400 mt-0.5">{item.date}</p>
+              </div>
+              <div className="flex items-center gap-1 text-sm font-extrabold text-slate-800">
+                <ArrowUpRight size={14} className="text-red-500" />
+                {fmt(item.amount)}
+              </div>
             </div>
-            <div className="flex-1 overflow-hidden">
-              <p className="text-sm font-bold text-slate-800 truncate">{item.description || `Achat #${i+1}`}</p>
-              <p className="text-xs font-semibold text-slate-400 mt-0.5">{item.date}</p>
-            </div>
-            <div className="flex items-center gap-1 text-sm font-extrabold text-slate-800">
-              <ArrowUpRight size={14} className="text-red-500" />
-              {fmt(item.amount)}
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="p-8 text-center text-slate-400 text-xs font-semibold bg-white rounded-2xl border border-slate-100 shadow-sm">
+          Aucune dépense enregistrée pour ce mois.
+        </div>
+      )}
     </div>
   );
 };
