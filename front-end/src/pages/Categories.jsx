@@ -187,9 +187,9 @@ const Categories = () => {
         setCategories(data.map((category) => ({
           name: category.name,
           icon: Coffee,
-          count: category.expenses_count || 0,
-          total: `${parseFloat(category.total_amount || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`,
-          budget: category.budget_percentage || 0,
+          count: category.number_transactions ?? 0,
+          total: `${parseFloat(category.expense_total || 0).toLocaleString('fr-FR', { minimumFractionDigits: 0 })} FCFA`,
+          budget: category.percentage_of_budget ?? 0,
           iconBg: '#fff7ed',
           iconColor: category.color || '#3b82f6',
           id: category.id,

@@ -1,10 +1,31 @@
 from rest_framework import serializers
 from .models import Category
 from django.contrib.auth.models import User
+from django.db.models import Sum
+from decimal import Decimal
+from django.utils import timezone
+from budget.models import Budget
 
 class CategorySerializer(serializers.ModelSerializer):
+    expense_total = serializers.SerializerMethodField()
+    number_transactions = serializers.SerializerMethodField()
+    percentage_of_budget = serializers.SerializerMethodField()
 
-    #user= serializers.PrimaryKeyRelatedField(queryset= User.objects.all())ceci est utilise pour demande seulement l'id du user et pas tous ses details, deplus il est utilile orsqu'on souhaite personnalise la representation du user dans la reponse de l'api, mais dans notre cas on n'a pas besoin de personnaliser la representation du user dans la reponse de l'api, donc on peut se passer de cette ligne et laisser le serializer generer automatiquement le champ user qui sera un PrimaryKeyRelatedField
     class Meta:
-        model= Category
-        fields= ['id','name','color','user']
+        model = Category
+        fields = ['id', 'name', 'color', 'user', 'expense_total', 'number_transactions', 'percentage_of_budget']
+
+    def get_expense_total(self, obj):
+        total = obj.expense_set.aggregate(total=Sum('amount'))['total']
+        return total if total is not None else Decimal('0.00')
+
+    def get_number_transactions(self, obj):
+        return obj.expense_set.count()
+
+    def get_percentage_of_budget(self, obj):
+        now = timezone.now()
+        budget = Budget.objects.filter(category=obj, user=obj.user, month=now.month, year=now.year).first()
+        if not budget or budget.amount <= 0:
+            return 0
+        total = self.get_expense_total(obj)
+        return round((float(total) / float(budget.amount)) * 100, 1)
